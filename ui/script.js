@@ -17,7 +17,13 @@ var color3 = '#09979E';
 var container, stats;
 var camera, scene, renderer;
 var particles, particle, count = 0;
-var num_particles = 99;
+
+
+var num_particles_per_arc = 99;
+var num_logo_arcs = 23;
+var num_particles = num_logo_arcs * num_particles_per_arc;
+
+
 var mouseX = 0, mouseY = 0;
 var windowHalfX, windowHalfY;
 var PI2 = Math.PI * 2;
@@ -69,7 +75,7 @@ var init = function() {
   // create particles
   particles = new Array();
   for ( var i = 0; i < num_particles; i ++ ) {
-    particle = particles[ i ++ ] = new THREE.Particle( material );
+    particle = particles[ i ] = new THREE.Particle( material );
     particle.position.x = 0;
     particle.position.y = 0;
     scene.add( particle );
@@ -119,16 +125,25 @@ var render = function () {
   camera.position.y += ( - mouseY - camera.position.y ) * .05;
   camera.lookAt( scene.position );
 
-  var inc = PI2 / 360;
   var pos = { x : 0, y : 0};
+  var inc = PI2 / 360; // one degree per increment
   var radius = 500;
-  for ( var i = 0; i < num_particles; i++ ) {
-    particle = particles[ i++ ];
-    particle.position.x = pos.x + Math.cos(inc * i) * radius * 1.15;
-    particle.position.y = pos.y + Math.sin(inc * i) * radius * 1.0;
-    particle.scale.x = particle.scale.y = 6;
-//    particle.scale.x = particle.scale.y = ( Math.sin( ( i + count ) * 0.3 ) + 1 ) * 2 + ( Math.sin( ( i + count ) * 0.5 ) + 1 ) * 2;
-  }
+
+  // for (var i = 0; i < num_logo_arcs; i++) {
+    // one arc
+    for ( var a = 0; a < num_particles_per_arc; a++ ) {
+      //console.log('b:' + a);
+
+      particle = particles[ a ];
+      //a++;
+      //console.log('a:' + a);
+      particle.position.x = pos.x + Math.cos(inc * a) * radius * 1.15;
+      particle.position.y = pos.y + Math.sin(inc * a) * radius * 1.0;
+      particle.scale.x = particle.scale.y = 6;
+    }
+  // }
+
+
   renderer.render( scene, camera );
 
   count += 0.1;
@@ -164,3 +179,11 @@ var onDocumentTouchMove = function ( event ) {
       mouseY = event.touches[ 0 ].pageY - windowHalfY;
     }
 };
+
+
+
+
+////////////////////
+// notes
+///
+//    particle.scale.x = particle.scale.y = ( Math.sin( ( i + count ) * 0.3 ) + 1 ) * 2 + ( Math.sin( ( i + count ) * 0.5 ) + 1 ) * 2;
