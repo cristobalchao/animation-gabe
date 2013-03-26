@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Prime Explorer</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			div {
+				margin:0px;
+				padding:0px;
+			}
+
+			a {
+				font-weight:bold;
+				color:#40a8ff;
+			}
+
+			img {
+				display: block;
+    margin-left: auto;
+    margin-right: auto
+			}
+
+
+			a:hover {
+				color: #80c0ff;
+			}
+
+			#num {
+				font-family: Monospace;
+				font-weight: bold;
+				font-size: 13px; 
+				background-color:rgba(0,0,0,.6); 
+				color:#0f0; 
+				text-align:center; 
+				width:60px; 
+				position:absolute; 
+				height:16px; 
+				display:none;
+
+				-webkit-user-select: none;  
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;
+			}
+
+			#equationinfo
+			{
+				font-size: 11px;
+				font-family: 'Lucida Grande', sans-serif;
+				color:#bbb;
+				position:absolute;
+				bottom:60px;
+				right:0px;
+				width:220px;
+				background:rgba(20,20,20,.85);
+				text-shadow: 0 2px 0 #111;
+				display:none;
+			}
+
+			#equationinfo ul
+			{
+				list-style: none;
+				margin:0;
+				padding:0;
+			}
+			#equationinfo li
+			{
+				border-bottom: 1px solid #2c2c2c;
+				height:27px;
+				line-height: 27px;
+				padding-left:8px;
+			}
+
+			#equationinfo span
+			{
+				color:#fff;
+			}
+
+
+
+			#leftinfo {
+				font-size: 11px;
+				font-family: 'Lucida Grande', sans-serif;
+				color:#bbb;
+				position:absolute;
+				top:0px;
+				left:0px;
+				width:280px;
+				background:rgba(20,20,20,.55);
+			}
+
+			#infoz {
+				font-size: 10px;
+				font-family: 'Lucida Grande', sans-serif;
+				color:#fff;
+				position: absolute;
+				bottom: 0px;
+				padding-top:10px;
+				height:35px;
+				width: 100%;
+				text-align: center;
+				background:rgba(20,20,20,.75);
+			}
+
+			button {
+				color: rgba(127,255,255,0.75);
+				background: transparent;
+				outline: 1px solid rgba(127,255,255,0.75);
+				border: 0px;
+				padding: 5px 10px;
+				cursor: pointer;
+			}
+			button:hover {
+				background-color: rgba(0,255,255,0.5);
+			}
+			button:active {
+				color: #000000;
+				background-color: rgba(0,255,255,0.75);
+			}
+
+		</style>
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" />
+		<link rel="stylesheet" href="./css/custom-theme/jquery-ui-1.10.1.custom.css" />
+  		
+  		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  		<script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+		<script src="threejs/three.js"></script>
+		<script src="threejs/ZoomPanControls.js"></script>
+
+		<script src="threejs/ConvolutionShader.js"></script>
+		<script src="threejs/CopyShader.js"></script>
+		<script src="threejs/FXAAShader.js"></script>
+
+		<script src="threejs/EffectComposer.js"></script>
+		<script src="threejs/MaskPass.js"></script>
+		<script src="threejs/RenderPass.js"></script>
+		<script src="threejs/ShaderPass.js"></script>
+		
+		<script src="js/dat.gui.js"></script>
+		<script src="threejs/BloomPass.js"></script>
+
+		<script src="threejs/Tween.js"></script>
+		<script src="threejs/Detector.js"></script>
+
+		<script src="threejs/stats.js"></script>
+		<script src="js/primes.js"></script>
+
+
+	</head>
+	<body>
+		<div id="infoz">
+			Prime Explorer v0.4.  Use mouse+scroll or WASD+RF to pan and zoom.
+			
+			White squares represent prime numbers.  Grey squares represent composites (non-primes).<br>
+			<a target="_blank" href="http://en.wikipedia.org/wiki/Prime_number">wp/Prime Number</a>&nbsp;•&nbsp;
+			<a target="_blank" href="http://en.wikipedia.org/wiki/Ulam_spiral">wp/Ulam Spiral</a>&nbsp;•&nbsp;
+			<a target="_blank" href="http://en.wikipedia.org/wiki/Hilbert_curve">wp/Hilbert Curve</a>&nbsp;•&nbsp;
+			<a target="_blank" href="http://www.bigblueboo.com">bigblueboo.com</a>&nbsp;•&nbsp;
+			<a target="_blank" href="https://twitter.com/intent/user?screen_name=bigblueboo">Follow @bigblueboo</a>&nbsp;•&nbsp;
+			<a target="_blank" href="https://www.google.com/intl/en/chrome/browser/">Google Chrome recommended.</a>
+		</div>
+
+		<div id="leftinfo">
+			<div id="accordion">
+			  <h3>Introduction</h3>
+			  <div>
+			    <p>
+			    A prime number is a number greater than one that cannot be divided evenly by any numbers except
+			    one and itself.
+			    <br><br>What we see here is the numbers from 1 to 62,500 laid out in order, where the
+			    prime numbers are bright squares and non-primes ("composites") are dim squares.
+			    <br>
+			    <br>As you can see, the grid looks a lot like an office building at night: seemingly random which
+			    windows are lit and which are dark.  Yet there are columns free of primes -- our first sign of
+			    order in the constellation of numbers.
+			    <br><br>
+			    Explore the grid:
+			    <ul>
+			    	<li>Pan by dragging around or by using the WASD keys.</li>
+			    	<li>Zoom in by scrolling with your mousewheel, two-finger scrolling on your touchpad, or using the RF keys.</li>
+			    	<li>Select squares to see what number they represent.</li>
+			    </ul>
+			    </p>
+			  </div>
+			  <h3>Layouts</h3>
+			  <div>
+			    <p>
+			    With the layout control, explore the different arrangements of numbers.
+			    <br><br>
+			    	<img src="layout.gif">
+			    	<br>
+			    	The inspiration for this visualization is the <a target="_blank" href="http://en.wikipedia.org/wiki/Ulam_spiral">Ulam spiral</a>.  The Ulam spiral consists of placing 1 in the center and counting up in a rectangular spiral.  See if you can find patterns in the different layouts.
+			    <ul>
+			    	<li>Simple 1,2,3... - the numbers in their natural order.</li>
+			    	<li><a target="_blank" href="http://en.wikipedia.org/wiki/Ulam_spiral">Ulam spirals</a> - spiraling out according to a geometric shape.</li>
+					<li><a target="_blank" href="http://en.wikipedia.org/wiki/Archimedean_spiral">Archimedean spiral</a> - spirals out in a steadily increasing radius.</li>
+					<li>Odd spiral - concentric circles with odd-numbered elements.</li>
+					<li><a target="_blank" href="http://en.wikipedia.org/wiki/Gosper_curve">Gosper curve</a> - a "<a target="_blank" href="http://en.wikipedia.org/wiki/Space-filling_curve">space filling curve</a>" like a crinkly noodle.</li>
+					<li><a target="_blank" href="http://en.wikipedia.org/wiki/Hilbert_curve">Hilbert curve</a> - a rectangular space-filling curve.</li>
+				</ul>
+			    </p>
+			  </div>
+			  <h3>Prime Curves</h3>
+			  <div>
+			    <p>
+			    	As you can see, some spirals contain strikingly bright diagonals or spiral arms.  What
+			    	determines which arms are rich in primes and which arms are poor?  Why are there
+			    	seeming voids free of primes?
+			    	<br><br>
+			    	<img src="curve.gif" width=128 height=128>
+			    	<br>
+			    	To discover an equation that fits a given diagonal or spiral arm, simply select three
+			    	squares in a row.  A curve ("<a target="_blank" href="http://en.wikipedia.org/wiki/Prime_number#Prime_values_of_quadratic_polynomials">quadratic polynomial</a>") will be fit to those three numbers and all other numbers on that curve will light up.
+			    	<br><br>
+			    	Visualize these prime curves across different visualizations.  Find a
+			    	particularly bright spiral or diagonal--then switch the layout.  What happens to a bright
+			    	diagonal in an Ulam spiral when you view it as an Archimedean spiral?
+			    </p>
+			  </div>
+			    
+			  <h3>What does it all mean?</h3>
+			  <div>
+			    <p>
+			    What was your best curve?  Could you find one with more than 70% primes?  What about 80%?
+			    Is there any equation that will gives us a prime every time, for sure?
+			    <br><br>
+			    The nature of numbers and the occurrence of primes is a central problem in a field of mathematics
+			    called "number theory".  Very smart people have been working very hard for a very long time--but
+			    the secret of prime numbers remains elusive.  <a target="_blank" href="http://en.wikipedia.org/wiki/Prime_number#Distribution">There is no efficient equation to generate every prime</a>, or
+			    even to always generate a prime.
+			    <br><br>
+			    <ul>
+			    <li>Learn about <a target="_blank" href="http://en.wikipedia.org/wiki/Prime_gap">prime gaps</a>, the distances
+			    between numbers.</li>
+				<li>The <a target="_blank" href="http://en.wikipedia.org/wiki/Prime_number_theorem">Prime Number Theorem</a> 
+				is one of the great results of prime research, describing the probability that a given 
+				number is prime.</li>
+
+				<li>Discover the myriad <a target="_blank" href="http://en.wikipedia.org/wiki/Template:Prime_number_classes">prime number classes</a>, consisting of dozens of species of prime numbers.</li>
+				</ul>
+			    </p>
+			  </div>
+			</div>
+		</div>
+
+		<div id="equationinfo">
+			<ul>
+				<li><span id="eqninfo_equation">x²+2x-9</span></li>
+				<li><span id="eqninfo_primes">11</span> primes and</li>
+				<li><span id="eqninfo_composites">22</span> composites below <span id="eqninfo_total"></span></li>
+				<li><span id="eqninfo_percent">33.3</span>% prime. <span id="eqninfo_best"></span></li>
+				<li><span id="eqninfo_divisors">1.2</span> divisors on average. <span id="eqninfo_bestdivisors"></span></li>
+			</ul>
+		</div>
+		<div id="num"></div>
+	</body>
+</html>
