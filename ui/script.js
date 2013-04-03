@@ -76,7 +76,7 @@ var init = function() {
   for ( var i = 0; i < num_particles; i ++ ) {
     particle = particles[ i ] = new THREE.Particle(
       new THREE.ParticleCanvasMaterial( {
-      color: color3,
+      color : color3,
       program: function ( context ) {
         context.beginPath();
         context.arc( 0, 0, 1, 0, PI2, true );
@@ -141,9 +141,10 @@ var layout_random = function() {
     var pos = particle.position;
     pos.x = Math.random() * 1000 - 500;
     pos.y = Math.random() * 1000 - 500;
-    //pos.z = Math.random() * 1000 - 500;
+    // pos.z = Math.random() * 1000 - 500;
   }
-}
+};
+
 
 var layout_logo = function () {
 
@@ -189,7 +190,7 @@ var layout_logo = function () {
       particle.scale.x = particle.scale.y = 6;
     }
   }
-}
+};
 
 
 var rotateZ = function(p, angle) {
@@ -201,7 +202,7 @@ var rotateZ = function(p, angle) {
   p.x = rx;
   p.y = ry;
   return p;
-}
+};
 
 var onWindowResize = function () {
   windowHalfX = window.innerWidth / 2;
@@ -214,7 +215,7 @@ var onWindowResize = function () {
 var onDocumentMouseMove = function ( event ) {
   mouseX = event.clientX - windowHalfX;
   mouseY = event.clientY - windowHalfY;
-}
+};
 
 var onDocumentTouchStart = function ( event ) {
   if ( event.touches.length === 1 ) {
@@ -227,9 +228,9 @@ var onDocumentTouchStart = function ( event ) {
 var onDocumentTouchMove = function ( event ) {
   if ( event.touches.length === 1 ) {
     event.preventDefault();
-      mouseX = event.touches[ 0 ].pageX - windowHalfX;
-      mouseY = event.touches[ 0 ].pageY - windowHalfY;
-    }
+    mouseX = event.touches[ 0 ].pageX - windowHalfX;
+    mouseY = event.touches[ 0 ].pageY - windowHalfY;
+  }
 };
 
 
