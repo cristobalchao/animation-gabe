@@ -53,30 +53,10 @@ var onColorChanged = function(v) {
 };
 
 
-var onLayoutChanged = function(v) {
-  console.log('Layout changed: ' + v);
-  particles.geometry.colorsNeedUpdate = true;
-  switch(layout) {
-
-    case layout_states[0] : // Waves
-      break;
-
-    case layout_states[1] : // Expand
-      break;
-
-    case layout_states[2] : // Field
-      break;
-
-    case layout_states[3] : // Cluster
-      break;
-
-    case layout_states[4] : // Network
-      break;
-
-    case layout_states[5] : // Logo
-      break;
-  }
+var onLayoutChanged = function() {
+  console.log('Layout changed: ' + layout);
 };
+
 
 var init = function() {
 
@@ -90,8 +70,6 @@ var init = function() {
   camera.position.z = 1500;
 
   scene = new THREE.Scene();
-
-
 
   // create particles
   particles = new Array();
@@ -144,6 +122,31 @@ var render = function () {
   camera.position.y += ( - mouseY - camera.position.y ) * .05;
   camera.lookAt( scene.position );
 
+  switch(layout) {
+    case layout_states[0] : layout_random(); break; // Waves
+    case layout_states[1] : layout_random(); break; // Expand
+    case layout_states[2] : layout_random(); break; // Field
+    case layout_states[3] : layout_random(); break; // Cluster
+    case layout_states[4] : layout_random(); break; // Network
+    case layout_states[5] : layout_logo();   break; // Logo
+  }
+
+  renderer.render( scene, camera );
+};
+
+
+var layout_random = function() {
+  for (var i = 0; i < num_particles; i++) {
+    particle = particles[ i ];
+    var pos = particle.position;
+    pos.x = Math.random() * 1000 - 500;
+    pos.y = Math.random() * 1000 - 500;
+    //pos.z = Math.random() * 1000 - 500;
+  }
+}
+
+var layout_logo = function () {
+
   var inc = PI2 / 360; // one degree per increment
   var arc_radius = 700;
   var logo_radius = 300;
@@ -186,11 +189,7 @@ var render = function () {
       particle.scale.x = particle.scale.y = 6;
     }
   }
-
-
-  renderer.render( scene, camera );
-  count += 0.1;
-};
+}
 
 
 var rotateZ = function(p, angle) {
