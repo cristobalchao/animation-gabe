@@ -16,7 +16,7 @@ var color3 = '#09979E';
 
 var container, stats;
 var camera, scene, renderer;
-var particles, particles_2, particle, particle_2, count = 0;
+var particles, particle, count = 0;
 
 
 var num_particles_per_arc = 99;
@@ -36,17 +36,46 @@ window.onload = function() {
   layoutButton.onFinishChange(function(value) {
     onLayoutChanged();
   });
-  gui.addColor(this, 'color0');
-  gui.addColor(this, 'color1');
-  gui.addColor(this, 'color2');
-  gui.addColor(this, 'color3');
+  gui.addColor(this, 'color0' ).onChange(onColorChanged);
+  gui.addColor(this, 'color1' ).onChange(onColorChanged);
+  gui.addColor(this, 'color2' ).onChange(onColorChanged);
+  gui.addColor(this, 'color3' ).onChange(onColorChanged);
 
   init();
   animate();
 };
 
-var onLayoutChanged = function() {
-  console.log("Layout changed: " + layout);
+
+var onColorChanged = function(v) {
+  for (var i = 0; i < num_particles; i++) {
+    particles[i].material.color.setHex( color3.replace( '#','0x' ) );
+  }
+};
+
+
+var onLayoutChanged = function(v) {
+  console.log('Layout changed: ' + v);
+  particles.geometry.colorsNeedUpdate = true;
+  switch(layout) {
+
+    case layout_states[0] : // Waves
+      break;
+
+    case layout_states[1] : // Expand
+      break;
+
+    case layout_states[2] : // Field
+      break;
+
+    case layout_states[3] : // Cluster
+      break;
+
+    case layout_states[4] : // Network
+      break;
+
+    case layout_states[5] : // Logo
+      break;
+  }
 };
 
 var init = function() {
@@ -62,40 +91,23 @@ var init = function() {
 
   scene = new THREE.Scene();
 
-  // particle material
-  var material = new THREE.ParticleCanvasMaterial( {
-    color: color3,
-    program: function ( context ) {
-      context.beginPath();
-      context.arc( 0, 0, 1, 0, PI2, true );
-      context.fill();
-    }
-  } );
-   var material_2 = new THREE.ParticleCanvasMaterial( {
-    color: color1,
-    program: function ( context ) {
-      context.beginPath();
-      context.arc( 0, 0, 1, 0, PI2, true );
-      context.fill();
-    }
-  } );
+
 
   // create particles
   particles = new Array();
   for ( var i = 0; i < num_particles; i ++ ) {
-    particle = particles[ i ] = new THREE.Particle( material );
+    particle = particles[ i ] = new THREE.Particle(
+      new THREE.ParticleCanvasMaterial( {
+      color: color3,
+      program: function ( context ) {
+        context.beginPath();
+        context.arc( 0, 0, 1, 0, PI2, true );
+        context.fill();
+      }
+      }));
     particle.position.x = 0;
     particle.position.y = 0;
     scene.add( particle );
-  }
-
-  // test particles
-  particles_2= new Array();
-  for ( var i = 0; i < num_logo_arcs; i ++ ) {
-    particle_2 = particles_2[ i ] = new THREE.Particle( material_2 );
-    particle_2.position.x = 0;
-    particle_2.position.y = 0;
-    scene.add( particle_2 );
   }
 
   // set up canvas container
@@ -145,13 +157,7 @@ var render = function () {
   // loop through all arcs
   for (var i = 0; i < num_logo_arcs; i++) {
 
-    particle_2 = particles_2[ i ];
-
     arc_rot = arc_rot_inc * i;
-
-    particle_2.position.x = logo_center.x + Math.cos(arc_rot) * logo_radius,
-    particle_2.position.y = logo_center.y + Math.sin(arc_rot) * logo_radius
-    particle_2.scale.x = particle_2.scale.y = 20;
 
     // draw each arc
     for ( var a = 0; a < num_particles_per_arc; a++ ) {
@@ -165,12 +171,14 @@ var render = function () {
       // do rotation per arc
       particle.position = rotateZ(particle.position, arc_rot);
 
-      // individual rotation
-      particle.position.x -= particle_2.position.x;
-      particle.position.y -= particle_2.position.y;
+      // individual arc rotation
+      var tmp_x = logo_center.x + Math.cos(arc_rot) * logo_radius,
+          tmp_y = logo_center.y + Math.sin(arc_rot) * logo_radius;
+      particle.position.x -= tmp_x;
+      particle.position.y -= tmp_y;
       particle.position = rotateZ(particle.position, mouseX / 100.0); // get this rotation correct
-      particle.position.x += particle_2.position.x;
-      particle.position.y += particle_2.position.y;
+      particle.position.x += tmp_x;
+      particle.position.y += tmp_y;
 
       // particle scale
       particle.scale.x = particle.scale.y = 6;
