@@ -140,8 +140,8 @@ var animate = function() {
 
 var render = function () {
 
-  //camera.position.x += ( mouseX - camera.position.x ) * .05;
-  //camera.position.y += ( - mouseY - camera.position.y ) * .05;
+  camera.position.x += ( mouseX - camera.position.x ) * .05;
+  camera.position.y += ( - mouseY - camera.position.y ) * .05;
   camera.lookAt( scene.position );
 
   var inc = PI2 / 360; // one degree per increment
@@ -163,22 +163,24 @@ var render = function () {
     for ( var a = 0; a < num_particles_per_arc; a++ ) {
 
       particle = particles[ count++ ];
+      var pos = particle.position;
 
       // generate particle position based on scaled ellipse
-      particle.position.x = logo_center.x + Math.cos(inc * a) * arc_radius * 1.15;
-      particle.position.y = logo_center.y + Math.sin(inc * a) * arc_radius * 1.0;
+      pos.x = logo_center.x + Math.cos(inc * a) * arc_radius * 1.15;
+      pos.y = logo_center.y + Math.sin(inc * a) * arc_radius * 1.0;
 
       // do rotation per arc
-      particle.position = rotateZ(particle.position, arc_rot);
+      pos = rotateZ(pos, arc_rot);
 
       // individual arc rotation
       var tmp_x = logo_center.x + Math.cos(arc_rot) * logo_radius,
           tmp_y = logo_center.y + Math.sin(arc_rot) * logo_radius;
-      particle.position.x -= tmp_x;
-      particle.position.y -= tmp_y;
-      particle.position = rotateZ(particle.position, mouseX / 100.0); // get this rotation correct
-      particle.position.x += tmp_x;
-      particle.position.y += tmp_y;
+      pos.x -= tmp_x;
+      pos.y -= tmp_y;
+      pos = rotateZ(pos, -1.8); // get this rotation correct
+
+      pos.x += tmp_x;
+      pos.y += tmp_y;
 
       // particle scale
       particle.scale.x = particle.scale.y = 6;
