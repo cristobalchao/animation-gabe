@@ -225,7 +225,7 @@
 									z : 0
 								};
 
-								particle.moveTo(target,10000);
+								particle.moveTo(target,1000);
 
 								stp = true;
 
@@ -262,7 +262,7 @@
 						particle.position.y = ( Math.sin( ( ix + count ) * 0.3 ) * 50 ) + ( Math.sin( ( iy + count ) * 0.5 ) * 50 );
 						particle.scale.x = particle.scale.y = ( Math.sin( ( ix + count ) * 0.3 ) + 1 ) * 2 + ( Math.sin( ( iy + count ) * 0.5 ) + 1 ) * 2;
 
-						if ( ix % 2 === 0 ){
+						/*if ( ix % 2 === 0 ){
 							particle.material.color.r = 0;
 							particle.material.color.g = 0;
 							particle.material.color.b = 0;
@@ -274,7 +274,7 @@
 							particle.material.color.r = 1;
 							particle.material.color.g = 1;
 							particle.material.color.b = 1;
-						}
+						}*/
 
 					}
 

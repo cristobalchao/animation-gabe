@@ -1,0 +1,134 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"></head><body><p>
+
+<p>
+  <a href="http://javascript.info/tutorial/animation" target="_blank"> Really good site for Functions Animations ( Javascript )</a>
+</p>
+
+</p><p>
+	Interpolation Functions
+</p>
+
+<p>	
+
+
+</p><pre class="prettyprint lang-java">// "standard" ease
+float standardeasein (float startPosition, float endPosition, float friction) {
+  return (startPosition + (endPosition-startPosition) / friction);
+}
+
+/*
+	t = current time
+	b = beginning value
+	c = change in value
+	d = duration	
+*/
+
+// linear move               ( + + + + + + + + + + + + + + + + + + + + + + ) 
+float linearMove (double t, float b, float c, float d) {
+   return float(c*t/d + b);
+}
+
+// Ease In Quadratic                  ( +     +    +   +  + +++ )
+float easeInQuad (double t, float b, float c, float d) {
+   return float(-c *(t/=d)*(t-2) + b);
+}
+
+// Ease Out Quadratic                 ( +++ +  +   +    +     + )
+float easeOutQuad (double t, float b, float c, float d) {
+   return float(c*(t/=d)*t+b);
+}
+
+// Ease Out/In Quadratic              ( +++ +  +   +    +     +     +     +    +   +  + +++ )
+float easeOutInQuad (double t, float b, float c, float d) {
+   if ((t/=d/2) &lt; 1) return float(c/2*t*t + b);
+   return float(-c/2 * ((--t)*(t-2) - 1) + b);
+}
+
+// Ease Out Cubic                       ( +++ +  +   +    +     + )
+float easeOutCubic (double t, float b, float c, float d) {
+   return float(c*(t/=d)*t*t + b);
+}
+
+// Ease In Cubic                       ( +     +    +   +  + +++ )
+float easeInCubic (double t, float b, float c, float d) {
+   return float(c*((t=t/d-1)*t*t + 1) + b);
+}
+
+// Ease Out/In Cubic                    ( +++ +  +   +    +     +     +     +    +   +  + +++ )
+float easeOutInCubic (double t, float b, float c, float d) {
+   if ((t/=d/2) &lt; 1) return float(c/2*t*t*t + b);
+   return float(c/2*((t-=2)*t*t + 2) + b);
+}
+
+// Ease Out Quartic                       ( +++ +  +   +    +     + )
+float easeOutQuart (double t, float b, float c, float d) {
+   return float(c*(t/=d)*t*t*t + b);
+}
+
+// Ease In Quartic                       ( +     +    +   +  + +++ )
+float easeInQuart (double t, float b, float c, float d) {
+   return float(-c * ((t=t/d-1)*t*t*t - 1) + b);
+}
+
+// Ease Out/In Quartic                    ( +++ +  +   +    +     +     +     +    +   +  + +++ )
+float easeOutInQuart (double t, float b, float c, float d) {
+   if ((t/=d/2) &lt; 1) return float(c/2*t*t*t*t + b);
+   return float(-c/2 * ((t-=2)*t*t*t - 2) + b);
+}
+
+// Ease Out Quintic                       ( +++ +  +   +    +     + )
+float easeOutQuint (double t, float b, float c, float d) {
+   return float(c*(t/=d)*t*t*t*t + b);
+}
+
+// Ease In Quintic                       ( +     +    +   +  + +++ )
+float easeInQuint (double t, float b, float c, float d) {
+   return float(c*((t=t/d-1)*t*t*t*t + 1) + b);
+}
+
+// Ease Out/In Quintic                    ( +++ +  +   +    +     +     +     +    +   +  + +++ )
+float easeOutInQuint (double t, float b, float c, float d) {
+   if ((t/=d/2) &lt; 1) return float(c/2*t*t*t*t*t + b);
+   return float(c/2*((t-=2)*t*t*t*t + 2) + b);
+}
+
+// Ease Out Sinusoidial                       ( +++ +  +   +    +     + )
+float easeOutSin (double t, float b, float c, float d) {
+   return float(-c * cos(float(t/d * (PI/2))) + c + b);
+}
+
+// Ease In Sinusoidial                       ( +     +    +   +  + +++ )
+float easeInSin (double t, float b, float c, float d) {
+   return float(c * sin(float(t/d * (PI/2))) + b);
+}
+
+// Ease Out/In Sinusoidial                    ( +++ +  +   +    +     +     +     +    +   +  + +++ )
+float easeOutInSin (double t, float b, float c, float d) {
+   return float(-c/2 * (cos(float(PI*t/d)) - 1) + b);
+}
+
+// Ease Out Exponential                       ( +++ +  +   +    +     + )
+float easeOutExpo (double t, float b, float c, float d) {
+   if (t == 0)  return float(b);
+   else return float(c *pow(2, float(10 * (t/d - 1))) + b); 
+}
+
+// Ease In Exponential                       ( +     +    +   +  + +++ )
+float easeInExpo (double t, float b, float c, float d) {
+   if (t == 0)  return float(b+c);
+   else return float(c * (-pow(2, float(-10 * t/d)) + 1) + b); 
+}
+
+// Ease Out/In Exponential                    ( +++ +  +   +    +     +     +     +    +   +  + +++ )
+float easeInOutExpo (double t, float b, float c, float d) {
+    if (t==0) return float(b);
+    if (t==d) return float(b+c);
+    if ((t/=d/2) &lt; 1) return float(c/2 * pow(2, float(10 * (t - 1))) + b);
+    return (c/2 * (-pow(2, float(-10 * --t)) + 2) + b);
+}</pre>
+<p></p>
+
+<p>
+Inspired by Robert Penner and other sources
+</p></body></html>
