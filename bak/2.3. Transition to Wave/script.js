@@ -28,7 +28,6 @@ var color1 = '#5EBD72';
 var color2 = '#07AD96';
 var color3 = '#09979E';
 
-
 var container, stats;
 var camera, scene, renderer;
 var particles, particle, count = 0;
@@ -46,6 +45,7 @@ var mouseX = 0, mouseY = 0;
 var windowHalfX, windowHalfY;
 var PI2 = Math.PI * 2;
 
+
 window.onload = function() {
 
   // init gui
@@ -61,7 +61,6 @@ window.onload = function() {
   var speedButton = gui.add(this, 'speed', 0, 20);
 
   var progressButton = gui.add(this, 'progress', 0, 100);
-
 
   gui.addColor(this, 'color0' ).onChange(onColorChanged);
   gui.addColor(this, 'color1' ).onChange(onColorChanged);
@@ -82,7 +81,6 @@ window.onload = function() {
   particles = new Array(num_particles);
   targets = new Array(num_particles);
   particle_control = new Array(num_particles);
-
   for ( var i = 0; i < num_particles; i ++ ) {
     particle = particles[ i ] = new THREE.Particle(
       new THREE.ParticleCanvasMaterial( {
@@ -135,29 +133,24 @@ var onColorChanged = function(v) {
   }
 };
 
+
 var changingLayout = false,
     changingWhileTransition = false;
 
 var onLayoutChanged = function() {
 
   switch(layout) {
-    case 'Waves':
 
+    case 'Waves':
       var SEPARATION = 100,
           count = 0;
-
       for ( var ix = 0; ix < num_logo_arcs; ix ++ ) {
-
         for ( var iy = 0; iy < num_particles_per_arc; iy ++ ) {
-
           var pos = new THREE.Vector3(0, 0, 0);
           pos.x = ix * SEPARATION - ( ( num_logo_arcs * SEPARATION ) / 2 );
           pos.z = iy * SEPARATION - ( ( num_particles_per_arc * SEPARATION ) / 2 );
-
           targets[count++] = pos;
-          
         }
-
       }
 
       if (!!changingLayout){
@@ -183,7 +176,10 @@ var onLayoutChanged = function() {
       }else{
         changingLayout = true;
       }
+
       break;
+
+
     case 'Logo':
       var inc = PI2 / 360;
       var arc_radius = 700;
@@ -214,7 +210,6 @@ var onLayoutChanged = function() {
           targets[count++] = pos;
         }
       }
-
       if (!!changingLayout){
         changingWhileTransition = true;
       }else{
@@ -224,121 +219,15 @@ var onLayoutChanged = function() {
   }
 };
 
-function processProgress(currentProgress){
-  
-  var result;
-
-  switch(easing) {
-    case 'linear':
-      result = currentProgress;
-      break;
-
-    case 'quad':
-      result = Math.pow(currentProgress, 2);
-      break;
-
-    case 'circ':
-      result = 1 - Math.sin(Math.acos(currentProgress));
-      break;
-
-    case 'bow':
-      var x = 1.5;
-      result = Math.pow(currentProgress, 2) * ((x + 1) * currentProgress - x);
-      break;
-
-    case 'bounce':
-      for(var a = 0, b = 1; 1; a += b, b /= 2) {
-        if (currentProgress >= (7 - 4 * a) / 11) {
-          result =  -Math.pow((11 - 6 * a - 11 * currentProgress) / 4, 2) + Math.pow(b, 2);
-          return result;
-        }
-      }
-      break;
-
-    case 'elastic':
-      var x = 1.5;
-      result = Math.pow(2, 10 * (currentProgress-1)) * Math.cos(20*Math.PI*x/3*currentProgress);
-      break;
-
-    default: //linear 
-      result = currentProgress;
-      break;
-
-  }
-
-  return result;
-}
-
-function tween(currentProgress, source, target){
-  return ( source + ( processProgress(currentProgress) * ( target - source ) ));
-}
-
-function Transition() {
-
-  this.startTime = Date.now();
-
-  this.speed = speed*1000;
-
-  requestAnimationFrame(this.tick.bind(this));
-
-  for (var i = 0; i < num_particles; i++){
-    particle_control[i].x = particles[i].position.x;
-    particle_control[i].y = particles[i].position.y;
-    particle_control[i].z = particles[i].position.z;
-  }
-}
 
 
-Transition.prototype.tick = function(time) {
-  var $this = this;
-
-  if (!!changingWhileTransition){
-    $this.startTime = Date.now();
-    changingWhileTransition = false;
-    for (var i = 0; i < num_particles; i++){
-      particle_control[i].x = particles[i].position.x;
-      particle_control[i].y = particles[i].position.y;
-      particle_control[i].z = particles[i].position.z;
-    }
-  }
-
-  $this.speed = speed*1000;
-  var timePassed = time - $this.startTime,
-      currentProgress = timePassed / $this.speed;
-
-  if (currentProgress > progress/100.0){
-    currentProgress = progress/100.0;
-  }
-  
-  for (var i = 0; i < num_particles; i++) {
-    particles[i].position.x = tween(currentProgress, particle_control[i].x, targets[i].x);
-    particles[i].position.y = tween(currentProgress, particle_control[i].y, targets[i].y);
-    particles[i].position.z = tween(currentProgress, particle_control[i].z, targets[i].z);
-  }
 
 
-  camera.position.x += ( mouseX - camera.position.x ) * .05;
-  camera.position.y += ( - mouseY - camera.position.y ) * .05;
-  camera.lookAt( scene.position );
-
-  renderer.render( scene, camera );
-
-  var now = Date.now();
-
-  if (currentProgress === 1) {
-    console.log('ended : '+timePassed );
-    changingLayout = transition = false;
-    return;
-  }
-
-  requestAnimationFrame(function(){
-    $this.tick(now);
-  });
-}
 
 var transition = false;
 
 var animate = function() {
+
   requestAnimationFrame( animate );
 
   if (!!!changingLayout){
@@ -348,7 +237,9 @@ var animate = function() {
     console.log('start');
     new Transition();
   }
+
   stats.update();
+
 };
 
 
@@ -380,13 +271,16 @@ var render = function () {
   }
 
   camera.position.x += ( mouseX - camera.position.x ) * .05;
-  camera.position.y += ( - mouseY - camera.position.y ) * .05;
+  camera.position.y += ( -mouseY - camera.position.y ) * .05;
   camera.lookAt( scene.position );
 
   renderer.render( scene, camera );
 
 };
 
+
+
+// EVENT LISTENERS
 var onWindowResize = function () {
   windowHalfX = window.innerWidth / 2;
   windowHalfY = window.innerHeight / 2;
@@ -394,12 +288,10 @@ var onWindowResize = function () {
   camera.updateProjectionMatrix();
   renderer.setSize( window.innerWidth, window.innerHeight );
 };
-
 var onDocumentMouseMove = function ( event ) {
   mouseX = event.clientX - windowHalfX;
   mouseY = event.clientY - windowHalfY;
 };
-
 var onDocumentTouchStart = function ( event ) {
   if ( event.touches.length === 1 ) {
     event.preventDefault();
@@ -407,7 +299,6 @@ var onDocumentTouchStart = function ( event ) {
     mouseY = event.touches[ 0 ].pageY - windowHalfY;
   }
 };
-
 var onDocumentTouchMove = function ( event ) {
   if ( event.touches.length === 1 ) {
     event.preventDefault();
@@ -418,8 +309,10 @@ var onDocumentTouchMove = function ( event ) {
 
 
 
-/// UTIL
 
+
+
+/// UTIL
 var rotateZ = function(p, angle) {
   var q = p;
   var sina = Math.sin(angle);
@@ -430,3 +323,126 @@ var rotateZ = function(p, angle) {
   p.y = ry;
   return p;
 };
+
+
+
+
+// TRANSITIONS
+
+
+
+function processProgress(currentProgress) {
+
+  var result;
+  switch(easing) {
+
+    case 'linear':
+      result = currentProgress;
+      break;
+
+    case 'quad':
+      result = Math.pow(currentProgress, 2);
+      break;
+
+    case 'circ':
+      result = 1 - Math.sin(Math.acos(currentProgress));
+      break;
+
+    case 'bow':
+      var x = 1.5;
+      result = Math.pow(currentProgress, 2) * ((x + 1) * currentProgress - x);
+      break;
+
+    case 'bounce':
+      for(var a = 0, b = 1; 1; a += b, b /= 2) {
+        if (currentProgress >= (7 - 4 * a) / 11) {
+          result =  -Math.pow((11 - 6 * a - 11 * currentProgress) / 4, 2) + Math.pow(b, 2);
+          return result;
+        }
+      }
+      break;
+
+    case 'elastic':
+      var x = 1.5;
+      result = Math.pow(2, 10 * (currentProgress-1)) * Math.cos(20*Math.PI*x/3*currentProgress);
+      break;
+
+    default: //linear
+      result = currentProgress;
+      break;
+
+  }
+
+  return result;
+}
+
+function tween(currentProgress, source, target){
+  return ( source + ( processProgress(currentProgress) * ( target - source ) ));
+}
+
+
+function Transition() {
+
+  this.startTime = Date.now();
+
+  this.speed = speed*1000;
+
+  requestAnimationFrame(this.tick.bind(this));
+
+  for (var i = 0; i < num_particles; i++){
+    particle_control[i].x = particles[i].position.x;
+    particle_control[i].y = particles[i].position.y;
+    particle_control[i].z = particles[i].position.z;
+  }
+}
+
+
+
+
+
+Transition.prototype.tick = function(time) {
+  var $this = this;
+
+  if (!!changingWhileTransition){
+    $this.startTime = Date.now();
+    changingWhileTransition = false;
+    for (var i = 0; i < num_particles; i++) {
+      particle_control[i].x = particles[i].position.x;
+      particle_control[i].y = particles[i].position.y;
+      particle_control[i].z = particles[i].position.z;
+    }
+  }
+
+  $this.speed = speed*1000;
+  var timePassed = time - $this.startTime,
+      currentProgress = timePassed / $this.speed;
+
+  if (currentProgress > progress/100.0){
+    currentProgress = progress/100.0;
+  }
+
+  for (var i = 0; i < num_particles; i++) {
+    particles[i].position.x = tween(currentProgress, particle_control[i].x, targets[i].x);
+    particles[i].position.y = tween(currentProgress, particle_control[i].y, targets[i].y);
+    particles[i].position.z = tween(currentProgress, particle_control[i].z, targets[i].z);
+  }
+
+
+  camera.position.x += ( mouseX - camera.position.x ) * .05;
+  camera.position.y += ( - mouseY - camera.position.y ) * .05;
+  camera.lookAt( scene.position );
+
+  renderer.render( scene, camera );
+
+  var now = Date.now();
+
+  if (currentProgress === 1) {
+    console.log('ended : '+timePassed );
+    changingLayout = transition = false;
+    return;
+  }
+
+  requestAnimationFrame(function(){
+    $this.tick(now);
+  });
+}

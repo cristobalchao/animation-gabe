@@ -17,10 +17,13 @@ var color3 = '#09979E';
 var container, stats;
 var camera, scene, renderer;
 var particles, particle, count = 0;
-var targets;
+var targets, targets_need_update = false;
 var transitionIndex = 0;
+var progress = 0;
 
-var clock = new THREE.Clock();
+var clock = new THREE.Clock(true);
+
+var progressBar, layoutSelector;
 
 var num_particles_per_arc = 99;
 var num_logo_arcs = 23;
@@ -34,14 +37,16 @@ window.onload = function() {
 
   // init gui
   gui = new dat.GUI();
-  var layoutButton = gui.add(this, 'layout', layout_states);
-  layoutButton.onFinishChange(function(value) {
+  layoutSelector = gui.add(this, 'layout', layout_states);
+  layoutSelector.onFinishChange(function(value) {
     onLayoutChanged();
   });
-  gui.addColor(this, 'color0' ).onChange(onColorChanged);
-  gui.addColor(this, 'color1' ).onChange(onColorChanged);
-  gui.addColor(this, 'color2' ).onChange(onColorChanged);
+  // gui.addColor(this, 'color0' ).onChange(onColorChanged);
+  // gui.addColor(this, 'color1' ).onChange(onColorChanged);
+  // gui.addColor(this, 'color2' ).onChange(onColorChanged);
+  progressBar = gui.add(this, 'progress', 0, 100).onChange(onProgressChange);
   gui.addColor(this, 'color3' ).onChange(onColorChanged);
+
 
   windowHalfX = window.innerWidth / 2;
   windowHalfY = window.innerHeight / 2;
@@ -100,6 +105,25 @@ window.onload = function() {
 
 
 
+var onProgressChange = function() {
+
+  var step = 100 / layout_states.length-1;
+  var pos = lmap(progress, 0, 100, 0, layout_states.length - 1);
+
+  var currentState = layout_states[parseInt(pos)];
+
+  if (currentState == layout_states[layout_states.length-1])
+    nextState = currentState;
+  else
+    nextState = layout_states[parseInt(pos) + 1];
+
+  var transAmount = pos - parseInt(pos);
+
+
+  console.log(currentState, nextState, transAmount);
+
+};
+
 
 var onColorChanged = function(v) {
   for (var i = 0; i < num_particles; i++) {
@@ -107,29 +131,66 @@ var onColorChanged = function(v) {
   }
 };
 
-
 var onLayoutChanged = function() {
+  updateLayout();
+  // set progress bar position based on layout change
+  var pos = lmap(layout_states.indexOf(layout), 0, layout_states.length-1, 0, 100);
+  progressBar.setValue(pos);
+};
+
+var _rand_pos = [];
+var updateLayout = function() {
+  switch(layout) {
+    case 'Waves': targets_need_update = true; break;
+    case 'Expand':
+    case 'Field':
+    case 'Cluster':
+    case 'Network':
+    case 'Logo':    targets_need_update = false; break;
+  }
+  // create new random array of particles for testing
+  for (var i = 0; i < num_particles; i++) {
+    _rand_pos[i] = new THREE.Vector3(
+        (Math.random() * 1000 - 500) * 2,
+        (Math.random() * 1000 - 500) * 2,
+        (Math.random() * 1000 - 500) * 2);
+    }
+    updateTargets();
+};
+
+
+var updateTargets = function() {
   switch(layout) {
     case 'Waves':
+      var t = clock.getElapsedTime() * 2.5;
+      var SEPARATION = 100, AMOUNTX = 50, AMOUNTY = 50, i = 0;
+      for ( var ix = 0; ix < num_logo_arcs; ix++ ) {
+        for ( var iy = 0; iy < num_particles_per_arc; iy++ ) {
+          targets[i].x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 ) + 1500;
+          targets[i].y = (Math.sin( ( ix + t ) * 0.3 ) * 50 ) + ( Math.sin( ( iy + t ) * 0.5 ) * 50) + 250;
+          targets[i].z = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
+          i++;
+        }
+      }
+      break;
+
     case 'Expand':
     case 'Field':
     case 'Cluster':
     case 'Network':
       for (var i = 0; i < num_particles; i++) {
-        targets[i] = new THREE.Vector3(
-          Math.random() * 1000 - 500,
-          Math.random() * 1000 - 500,
-          0);
+        targets[i] = _rand_pos[i];
       }
       break;
+
     case 'Logo':
-      var inc = PI2 / 360;
-      var arc_radius = 700;
-      var logo_radius = 300;
-      var logo_center = { x : 0, y : 0};
-      var arc_rot_inc = PI2 / num_logo_arcs;
-      var arc_rot = 0;
-      var count = 0;
+      var inc = PI2 / 360,
+          arc_radius = 700,
+          logo_radius = 300,
+          logo_center = { x : 0, y : 0},
+          arc_rot_inc = PI2 / num_logo_arcs,
+          arc_rot = 0,
+          count = 0;
       // loop through all arcs
       for (var i = 0; i < num_logo_arcs; i++) {
         arc_rot = arc_rot_inc * i;
@@ -153,9 +214,8 @@ var onLayoutChanged = function() {
         }
       }
       break;
-
-  }
-};
+    }
+}
 
 
 var animate = function() {
@@ -168,18 +228,32 @@ var animate = function() {
 
 var render = function () {
 
-  for (var i = 0; i < num_particles; i++) {
-    particles[i].position.x += (targets[i].x - particles[i].position.x ) * 0.2;
-    particles[i].position.y += (targets[i].y - particles[i].position.y ) * 0.2;
-    particles[i].position.z += (targets[i].z - particles[i].position.z ) * 0.2;
-  }
+  if (targets_need_update)
+    updateTargets();
 
+  // update particle positions
+  for (var i = 0; i < num_particles; i++)
+    particles[i].position = transition(particles[i].position, targets[i]);
+
+  // update camera position
   camera.position.x += ( mouseX - camera.position.x ) * .05;
   camera.position.y += ( - mouseY - camera.position.y ) * .05;
   camera.lookAt( scene.position );
 
+  // render
   renderer.render( scene, camera );
 };
+
+
+
+var transition = function( start, end ) {
+    start.x += (end.x - start.x ) * 0.2;
+    start.y += (end.y - start.y ) * 0.2;
+    start.z += (end.z - start.z ) * 0.2;
+    return start;
+}
+
+
 
 
 var onWindowResize = function () {
@@ -214,6 +288,9 @@ var onDocumentTouchMove = function ( event ) {
 
 
 /// UTIL
+var lmap = function(v, in_min, in_max, out_min, out_max) {
+  return out_min + (out_max-out_min) * ((v - in_min) / (in_max - in_min));
+}
 
 var rotateZ = function(p, angle) {
   var q = p;
