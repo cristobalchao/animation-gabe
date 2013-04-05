@@ -104,24 +104,29 @@ window.onload = function() {
 };
 
 
-
+var currentState = 0, nextState = 0, transAmt = 0;
 var onProgressChange = function() {
 
   var step = 100 / layout_states.length-1;
   var pos = lmap(progress, 0, 100, 0, layout_states.length - 1);
 
-  var currentState = layout_states[parseInt(pos)];
+  currentState = layout_states[parseInt(pos)];
 
   if (currentState == layout_states[layout_states.length-1])
     nextState = currentState;
   else
     nextState = layout_states[parseInt(pos) + 1];
 
-  var transAmount = pos - parseInt(pos);
+  transAmt = pos - parseInt(pos);
 
+  layout = currentState;
 
-  console.log(currentState, nextState, transAmount);
+  // targets_need_update = true;
+  // updateTargets();
 
+  //updateLayout();
+
+  //console.log(currentState, nextState, transAmt);
 };
 
 
@@ -232,8 +237,9 @@ var render = function () {
     updateTargets();
 
   // update particle positions
-  for (var i = 0; i < num_particles; i++)
+  for (var i = 0; i < num_particles; i++) {
     particles[i].position = transition(particles[i].position, targets[i]);
+  }
 
   // update camera position
   camera.position.x += ( mouseX - camera.position.x ) * .05;
@@ -245,13 +251,24 @@ var render = function () {
 };
 
 
+function tween(currentProgress, start, end) {
+  return ( start + ( processProgress(currentProgress) * ( end - start) ));
+}
 
 var transition = function( start, end ) {
-    start.x += (end.x - start.x ) * 0.2;
-    start.y += (end.y - start.y ) * 0.2;
-    start.z += (end.z - start.z ) * 0.2;
+    // start.x += (end.x - start.x ) * 0.2;
+    // start.y += (end.y - start.y ) * 0.2;
+    // start.z += (end.z - start.z ) * 0.2;
+    start.x = tween(transAmt, start.x, end.x);
+    start.y = tween(transAmt, start.y, end.y);
+    start.z = tween(transAmt, start.z, end.z);
     return start;
 }
+
+function processProgress(currentProgress) {
+  return result = currentProgress;;
+}
+
 
 
 
