@@ -17,7 +17,9 @@ var color3 = '#09979E';
 var container, stats;
 var camera, scene, renderer;
 var particles, particle, count = 0;
-var targets, targets_need_update = false;
+var targets;
+var currentTargets = [], nextTargets = [];
+var _rand_pos = [], _rand_pos2 = [];
 var transitionIndex = 0;
 var progress = 0;
 
@@ -35,18 +37,40 @@ var PI2 = Math.PI * 2;
 
 window.onload = function() {
 
+
+
   // init gui
   gui = new dat.GUI();
   layoutSelector = gui.add(this, 'layout', layout_states);
   layoutSelector.onFinishChange(function(value) {
     onLayoutChanged();
   });
+  //layoutSelector.setValue(layout_states[0]);
   // gui.addColor(this, 'color0' ).onChange(onColorChanged);
   // gui.addColor(this, 'color1' ).onChange(onColorChanged);
   // gui.addColor(this, 'color2' ).onChange(onColorChanged);
   progressBar = gui.add(this, 'progress', 0, 100).onChange(onProgressChange);
   gui.addColor(this, 'color3' ).onChange(onColorChanged);
 
+  // generate current targets
+  currentTargets = generateTargets(layout_states[0]);
+
+  // generate next targets
+  nextTargets = generateTargets(layout_states[1]);
+
+  // create some random positions for testing
+  for (var i = 0; i < num_particles; i++) {
+    _rand_pos[i] = new THREE.Vector3(
+        (Math.random() * 1000 - 500) * 2,
+        (Math.random() * 1000 - 500) * 2,
+        (Math.random() * 1000 - 500) * 2);
+    _rand_pos2[i] = new THREE.Vector3(
+        (Math.random() * 1000 - 500) * 2,
+        (Math.random() * 1000 - 500) * 2,
+        (Math.random() * 1000 - 500) * 2);
+    }
+
+  //console.log(currentTargets, nextTargets);
 
   windowHalfX = window.innerWidth / 2;
   windowHalfY = window.innerHeight / 2;
@@ -60,7 +84,7 @@ window.onload = function() {
 
   // create particles
   particles = new Array(num_particles);
-  targets = new Array(num_particles);
+
 
   for ( var i = 0; i < num_particles; i ++ ) {
     particle = particles[ i ] = new THREE.Particle(
@@ -104,29 +128,27 @@ window.onload = function() {
 };
 
 
-var currentState = 0, nextState = 0, transAmt = 0;
+var currentLayout = 0, nextLayout = 0, transAmt = 0;
 var onProgressChange = function() {
 
   var step = 100 / layout_states.length-1;
   var pos = lmap(progress, 0, 100, 0, layout_states.length - 1);
 
-  currentState = layout_states[parseInt(pos)];
+  currentLayout = layout_states[parseInt(pos)];
 
-  if (currentState == layout_states[layout_states.length-1])
-    nextState = currentState;
+  if (currentLayout == layout_states[layout_states.length-1])
+    nextLayout = currentLayout;
   else
-    nextState = layout_states[parseInt(pos) + 1];
+    nextLayout = layout_states[parseInt(pos) + 1];
 
   transAmt = pos - parseInt(pos);
+  //console.log(transAmt);
 
-  layout = currentState;
-
-  // targets_need_update = true;
-  // updateTargets();
-
-  //updateLayout();
-
-  //console.log(currentState, nextState, transAmt);
+  if (layout != currentLayout) {
+    layout = currentLayout;
+    currentTargets = generateTargets(currentLayout);
+    nextTargets = generateTargets(nextLayout);
+  }
 };
 
 
@@ -137,54 +159,56 @@ var onColorChanged = function(v) {
 };
 
 var onLayoutChanged = function() {
-  updateLayout();
   // set progress bar position based on layout change
   var pos = lmap(layout_states.indexOf(layout), 0, layout_states.length-1, 0, 100);
   progressBar.setValue(pos);
 };
 
-var _rand_pos = [];
-var updateLayout = function() {
-  switch(layout) {
-    case 'Waves': targets_need_update = true; break;
-    case 'Expand':
-    case 'Field':
-    case 'Cluster':
-    case 'Network':
-    case 'Logo':    targets_need_update = false; break;
-  }
-  // create new random array of particles for testing
-  for (var i = 0; i < num_particles; i++) {
-    _rand_pos[i] = new THREE.Vector3(
-        (Math.random() * 1000 - 500) * 2,
-        (Math.random() * 1000 - 500) * 2,
-        (Math.random() * 1000 - 500) * 2);
-    }
-    updateTargets();
-};
-
-
 var updateTargets = function() {
-  switch(layout) {
+  //targets = generateTargets(layout);
+  currentTargets = generateTargets(currentLayout);
+  nextTargets = generateTargets(nextLayout);
+}
+
+var generateTargets = function(_layout) {
+
+  var arr = [num_particles];
+  for (var i = 0; i < num_particles; i++) {
+    arr[i] = new THREE.Vector3(0,0,0);
+  }
+
+  switch(_layout) {
     case 'Waves':
       var t = clock.getElapsedTime() * 2.5;
       var SEPARATION = 100, AMOUNTX = 50, AMOUNTY = 50, i = 0;
       for ( var ix = 0; ix < num_logo_arcs; ix++ ) {
         for ( var iy = 0; iy < num_particles_per_arc; iy++ ) {
-          targets[i].x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 ) + 1500;
-          targets[i].y = (Math.sin( ( ix + t ) * 0.3 ) * 50 ) + ( Math.sin( ( iy + t ) * 0.5 ) * 50) + 250;
-          targets[i].z = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
+          arr[i].x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 ) + 1500;
+          arr[i].y = (Math.sin( ( ix + t ) * 0.3 ) * 50 ) + ( Math.sin( ( iy + t ) * 0.5 ) * 50) + 250;
+          arr[i].z = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
           i++;
         }
       }
       break;
 
     case 'Expand':
+      for (var i = 0; i < num_particles; i++) {
+        arr[i] = _rand_pos2[i];
+      }
+      break;
     case 'Field':
+      for (var i = 0; i < num_particles; i++) {
+        arr[i] = _rand_pos[i];
+      }
+      break;
     case 'Cluster':
+      for (var i = 0; i < num_particles; i++) {
+        arr[i] = _rand_pos2[i];
+      }
+      break;
     case 'Network':
       for (var i = 0; i < num_particles; i++) {
-        targets[i] = _rand_pos[i];
+        arr[i] = _rand_pos[i];
       }
       break;
 
@@ -215,16 +239,18 @@ var updateTargets = function() {
           pos = rotateZ(pos, -1.8); // get this rotation correct
           pos.x += tmp_x;
           pos.y += tmp_y;
-          targets[count++] = pos;
+          arr[count++] = pos;
         }
       }
       break;
     }
+    return arr;
 }
 
 
 var animate = function() {
   requestAnimationFrame( animate );
+  updateTargets();
   render();
   stats.update();
 };
@@ -233,12 +259,9 @@ var animate = function() {
 
 var render = function () {
 
-  if (targets_need_update)
-    updateTargets();
-
   // update particle positions
   for (var i = 0; i < num_particles; i++) {
-    particles[i].position = transition(particles[i].position, targets[i]);
+    particles[i].position = transition(particles[i].position, currentTargets[i], nextTargets[i]);
   }
 
   // update camera position
@@ -251,21 +274,19 @@ var render = function () {
 };
 
 
+var transition = function( pos, start, end ) {
+  pos.x = lerp(pos.x, tween(transAmt, start.x, end.x), 0.2);
+  pos.y = lerp(pos.y, tween(transAmt, start.y, end.y), 0.2);
+  pos.z = lerp(pos.z, tween(transAmt, start.z, end.z), 0.2);
+  return pos;
+}
+
 function tween(currentProgress, start, end) {
   return ( start + ( processProgress(currentProgress) * ( end - start) ));
 }
 
-var transition = function( start, end ) {
-    // start.x += (end.x - start.x ) * 0.2;
-    // start.y += (end.y - start.y ) * 0.2;
-    // start.z += (end.z - start.z ) * 0.2;
-    start.x = tween(transAmt, start.x, end.x);
-    start.y = tween(transAmt, start.y, end.y);
-    start.z = tween(transAmt, start.z, end.z);
-    return start;
-}
-
 function processProgress(currentProgress) {
+  // insert other tweens here
   return result = currentProgress;;
 }
 
@@ -305,10 +326,18 @@ var onDocumentTouchMove = function ( event ) {
 
 
 /// UTIL
+
+// linear map
 var lmap = function(v, in_min, in_max, out_min, out_max) {
   return out_min + (out_max-out_min) * ((v - in_min) / (in_max - in_min));
 }
 
+// linear interpolation
+var lerp = function(start, end, amt) {
+  return start + (end - start) * amt;
+}
+
+// rotate particle around z-axis
 var rotateZ = function(p, angle) {
   var q = p;
   var sina = Math.sin(angle);
