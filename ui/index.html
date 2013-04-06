@@ -12,43 +12,24 @@
 
         <script>
         $(document).ready(function(){
-
             function centerElements(){
                 $('.center').each(function(){
                     var parentW = $(window).outerWidth(),
                     parentH = $(window).outerHeight(),
                     elemW = $(this).outerWidth(),
                     elemH = $(this).outerHeight();
-
                     var posLeft = (parentW/2) - (elemW/2),
                     posTop = (parentH/2) - (elemH/2);
-
-
                     $(this).css({'top':posTop,'left':posLeft});
                 });
             }
-
             $(window).resize(function() {
                 centerElements();
             });
-
             centerElements();
-
         });
         </script>
     </head>
 <body>
-    <style>
-        img{
-            display: none;
-            position: absolute;
-            opacity: 0.5;
-            left:481.5px !important;
-            right: 141.5px !important;
-        }
-
-    </style>
-
-    <img src="logo.png" id="logo" class="center"/>
 </body>
 </html>
