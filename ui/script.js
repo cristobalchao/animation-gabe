@@ -9,20 +9,22 @@ var layout_states = [
 ];
 var line_opacity_states = [
   0
-, 1
+, 0
 , 1
 , 1
 , 0
 , 0
 ]
-var layout = layout_states[4];
-var particleColor = '#09979E';
+var layout = layout_states[0];
+var lineOpacity = line_opacity_states[0];
+
+var particleColor = '#319ba2';
+var bgColor = '#222';
 
 var container, stats;
 var camera, scene, renderer;
 var particles, particle, count = 0;
 var lines;
-var lineOpacity = 0.5;
 var lineOpacityA = 0, lineOpacityB = 0;
 var targets;
 var targetA = [], targetB = [];
@@ -68,12 +70,16 @@ window.onload = function() {
     for (var i = 0; i < num_particles; i++)
       particles[i].material.color.setHex( c );
   });
+  gui.addColor(this, 'bgColor' ).onChange(function(v) {
+    $('body').css({ backgroundColor : v });
+  });
+
 
   targetA = generateTargets(layout_states[0]);
   targetB = generateTargets(layout_states[1]);
 
-  targetA = generateTargets(currentLayout);
-  targetB = generateTargets(nextLayout);
+  // targetA = generateTargets(currentLayout);
+  // targetB = generateTargets(nextLayout);
 
   // create some random positions for testing
   for (var i = 0; i < num_particles; i++) {
@@ -238,6 +244,10 @@ var generateTargets = function(_layout) {
           arr[i].x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 ) + 1500;
           arr[i].y = (Math.sin( ( ix + t ) * 0.3 ) * 50 ) + ( Math.sin( ( iy + t ) * 0.5 ) * 50);
           arr[i].z = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
+
+          //arr[i] = rotateX(arr[i], Math.sin(t) * 0.2); // get this rotation correct
+          //arr[i] = rotateZ(arr[i], t); // get this rotation correct
+          arr[i] = rotateY(arr[i], t * 0.01); // get this rotation correct
           i++;
         }
       }
