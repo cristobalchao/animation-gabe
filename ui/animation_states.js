@@ -89,7 +89,9 @@ var animation_states = [
       t *= 0.5;
 
       var num_cluster_pnts = num_particles / num_clusters;
+
       var c = 0, cc = num_particles;
+
       for (var i = 0; i < num_clusters; i++) {
 				arr[c] = _cluster_positions[i];
 				c++;
@@ -104,7 +106,8 @@ var animation_states = [
 
           //arr[c]    = rotateY( arr[c], t * _rands[cc] * .5 );
           arr[c]    = rotateZ( arr[c], t * 2.6 * (_rands[_rand_keys[cc]]) );
-          arr[c]    = rotateX( arr[c], t * 2.0 * (_rands[_rand_keys[cc]]) );
+          arr[c]    = rotateY( arr[c], t * 1.0 * (_rands[c]) );
+          arr[c]    = rotateX( arr[c], t * -1.0 * (_rands[c]) );
 
           //arr[c].y = Math.sin(arr[c].y * t * 0.2) * 100;
 

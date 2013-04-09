@@ -12,7 +12,7 @@ var line_opacity_states = [
 , 0
 , 0
 , 0
-, 0
+, 1
 , 0
 ];
 var layout = layout_states[0];
