@@ -2,7 +2,7 @@ var gui;
 var layout_states = [
   'Waves'
 , 'Expand'
-, 'Field'
+, 'Twinkle'
 , 'Cluster'
 , 'Network'
 , 'Logo'
@@ -262,7 +262,7 @@ var generateTargets = function(_layout) {
         arr[i].z =  Math.cos(phi)   * radius;
       }
       break;
-    case 'Field':
+    case 'Twinkle':
       var inc = (Math.PI * 2) / num_particles;
       var rad = (Math.sin(t) * 200.2) + 500;
       for (var i = 0; i < num_particles; i++) {
