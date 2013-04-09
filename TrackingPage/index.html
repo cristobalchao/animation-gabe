@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<head>
+	<link rel="stylesheet/less" href="css/style.less" type="text/css">
+	<link rel="stylesheet/less" href="css/style-tracking.less" type="text/css">
+	<script type="text/javascript" src="css/less-1.3.3.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+	<script src="js/kalisto.js" ></script>
+	<script type="text/javascript" src="js/functions.js"></script>
+	<script type="text/javascript" src="js/functions-tracking.js"></script>
+	<script src="js/animation/three.js"></script>
+	<script src="js/animation/script0.js"></script>
+
+<style>
+	canvas{
+		position: absolute;
+		top: 0;
+	}
+</style>
+
+</head>
+<body>
+	<table id="control">
+		<tr class="row">
+			<td><span>Last Login : </span></td>
+			<td><input type="text" maxlength="3" class="last"/> % </td>
+		</tr>
+		<tr class="row">
+			<td><span>Current Status : </span></td>
+			<td><input type="text" maxlength="3" class="progress"/> % </td>
+		</tr>
+		<tr class="row">
+			<td class="close"><span>Controls</span></td>
+			<td></td>
+		</tr>
+	</table>
+
+
+	<!-- UTILITY BAR 540pixels extended / 106 pixels collapsed -->
+	<div id="utility-bar">
+		<aside id="utilityBar">
+			<ul>
+				<li id="logo"></li>
+				<li id="search"></li>
+				<li id="settings"></li>
+				<li id="order" class="active"></li>
+				<li id="dashboard"></li>
+				<li id="contact"></li>
+			</ul>
+		</aside>
+		<aside id="utilityBarExt">
+			<div class="title">Order List</div>
+			<div class="list-orders">
+				<ul>
+				</ul>
+				<span class="view-order"></span>
+			</div>
+		</aside>
+	</div>
+	<div class="wrapper">
+		<section class="content">
+			<div id="top" style="heigth:100%;width:100%;position:relative">
+				<div id="top-page">
+					<span class="h1">Your sample is currently being processed.</span>
+					<span class="h4">Estimated test completion between April 23-28</span>
+				</div>
+			</div>
+			<div id="timeline">
+				<h2>Timeline</h2>
+				<div class="process">
+					<span id="bar-progress">
+						<span id="current-progress" class="mark"></span>
+					</span>
+					<span id="bar-last">
+						<span id="last-progress" class="mark"></span>
+					</span>
+					<div id="blood" class="elem-timeline">
+						<div class="first-state"></div>
+						<div class="second-state"></div>
+						<div class="third-state"></div>
+					</div>
+					<div id="transit" class="elem-timeline">
+						<div class="first-state"></div>
+						<div class="second-state"></div>
+						<div class="third-state"></div>
+					</div>
+					<div id="arrival" class="elem-timeline">
+						<div class="first-state"></div>
+						<div class="second-state"></div>
+						<div class="third-state"></div>
+					</div>
+					<div id="processing" class="elem-timeline">
+						<div class="first-state"></div>
+						<div class="second-state"></div>
+						<div class="third-state"></div>
+					</div>
+					<div id="analysis" class="elem-timeline">
+						<div class="first-state"></div>
+						<div class="second-state"></div>
+						<div class="third-state"></div>
+					</div>
+					<div id="results" class="elem-timeline">
+						<div class="first-state"></div>
+						<div class="second-state"></div>
+						<div class="third-state"></div>
+					</div>
+				</div>
+			</div>
+			<div class="your-action">
+				<h2>Your Action Items</h2>
+				<div id="container">
+					<div class="element">
+						<div class="left-column">
+							Sed posuere consectetur est at lobortis.
+						</div>
+						<div class="right-column">
+							Added by you
+						</div>
+					</div>
+					<div class="element">
+						<div class="left-column">
+							Nullam id dolor id nibh ultrices.
+						</div>
+						<div class="right-column">
+							Added by Dr. Turalba
+						</div>
+					</div>
+					<div class="element">
+						<div class="left-column">
+							Donec ullamcorper nulla non metus auctor fringilla.
+						</div>
+						<div class="right-column">
+							Added by Invitae
+						</div>
+					</div>
+					<div class="element">
+						<div class="left-column">
+							Maecenas sed diam eget.
+						</div>
+						<div class="right-column">
+							Added by you
+						</div>
+					</div>
+				</div>
+				<div id="controller">
+					<div class="left-column">
+						<input class="input-item" type="text" placeholder="Type in a new action item">
+					</div>
+					<div class="right-column">
+						<button class="add-button"></button>
+					</div>
+				</div>
+			</div>
+			<div class="latest-and-summary">
+				<div class="latest-updates">
+					<h2>Latest Updates</h2>
+					<article>
+						<h4>Nulla vitae elit libero, a pharetra augue.</h4>
+						<p class="date">March 24, 2013</p>
+						<p class="text">
+							Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+						</p>
+						<p class="text">
+							"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+						</p>
+						<p class="text">
+							"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+						</p>
+					</article>
+					<article>
+						<h4>Vestibulum id ligula porta semper.</h4>
+						<p class="date">March 20, 2013</p>
+						<p class="text">
+							Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+						</p>
+						<p class="text">
+							"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+						</p>
+						<p class="text">
+							"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+						</p>
+					</article>
+					<article>
+						<h4>Maecenas sed diam eget risus varius blandit sit amet non magna.</h4>
+						<p class="date">March 20, 2013</p>
+						<p class="text">
+							Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+						</p>
+						<p class="text">
+							"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+						</p>
+						<p class="text">
+							"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+						</p>
+					</article>
+				</div>
+
+				<div class="sidebar-table" style="display:table-cell; vertical-align:top; width:200px">
+					<h2>Test Summary</h2>
+					<div class="cover-image">
+						<div class="unit-image">
+							<img src="img/test-summary.png" />
+							<span class="unit">56</span>
+						</div>
+						<div class="unit-image">
+							<img src="img/test-summary.png" />
+						</div>
+					</div>
+					<h4>Your test covers 56 genes.</h4>
+					<a href="">See full list</a>
+				</div>
+			</div>
+		</section>
+	</div>
+</body>
