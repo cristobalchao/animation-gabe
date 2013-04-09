@@ -10,11 +10,11 @@ var layout_states = [
 var line_opacity_states = [
   0
 , 0
-, 1
-, 1
 , 0
 , 0
-]
+, 0
+, 0
+];
 var layout = layout_states[0];
 var lineOpacity = line_opacity_states[0];
 
@@ -28,7 +28,6 @@ var lines;
 var lineOpacityA = 0, lineOpacityB = 0;
 var targets;
 var targetA = [], targetB = [];
-var _rand_pos = [], _rand_pos2 = [];
 
 var currentLayout = 0, nextLayout = 0, transitionMix = 0;
 var progressControl;
@@ -78,21 +77,6 @@ window.onload = function() {
   targetA = generateTargets(layout_states[0]);
   targetB = generateTargets(layout_states[1]);
 
-  // targetA = generateTargets(currentLayout);
-  // targetB = generateTargets(nextLayout);
-
-  // create some random positions for testing
-  for (var i = 0; i < num_particles; i++) {
-    _rand_pos[i] = new THREE.Vector3(
-        (Math.random() * 1000 - 500) * 2,
-        (Math.random() * 1000 - 500) * 2,
-        (Math.random() * 1000 - 500) * 2);
-    _rand_pos2[i] = new THREE.Vector3(
-        (Math.random() * 1000 - 500) * 2,
-        (Math.random() * 1000 - 500) * 2,
-        (Math.random() * 1000 - 500) * 2);
-    }
-
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
   camera.position.z = 1500;
@@ -110,7 +94,7 @@ window.onload = function() {
         }
       }));
     particle.position = new THREE.Vector3(0,0,0);
-    particle.scale.x = particle.scale.y = 6;
+    particle.scale.x = particle.scale.y = 10;
     scene.add( particle );
   }
 
@@ -188,11 +172,11 @@ var onProgressChange = function() {
   var layoutID = lmap(progress, 0, 100, 0, layout_states.length - 1);
 
   currentLayout = layout_states[parseInt(layoutID)];
-  nextLayout = currentLayout == layout_states[layout_states.length-1] ?
+  nextLayout = currentLayout == layout_states[layout_states.length - 1] ?
                currentLayout : layout_states[parseInt(layoutID) + 1];
 
   lineOpacityA = line_opacity_states[parseInt(layoutID)];
-  lineOpacityB = lineOpacityA == line_opacity_states[line_opacity_states.length-1] ?
+  lineOpacityB = lineOpacityA == line_opacity_states[line_opacity_states.length - 1] ?
                  lineOpacityA : line_opacity_states[parseInt(layoutID) + 1];
 
   transitionMix = layoutID - parseInt(layoutID);
@@ -216,6 +200,11 @@ var updateTargets = function() {
   targetB = generateTargets(nextLayout);
 };
 
+var generateTargets = function(_layout) {
+  var t = clock.getElapsedTime();
+  return animation_states[layout_states.indexOf(_layout)].update(t);
+};
+
 var updateLines = function() {
   var randIds = new Array(num_particles);
   for (var i = 0; i < lines.length; i++) {
@@ -224,108 +213,6 @@ var updateLines = function() {
     lines[i].material.opacity = tween(transitionMix, lineOpacityA, lineOpacityB);
   }
 };
-
-var generateTargets = function(_layout) {
-
-  var arr = new Array(num_particles);
-  for (var i = 0; i < num_particles; i++) {
-    arr[i] = new THREE.Vector3(0,0,0);
-  }
-
-  // timer
-  var t = clock.getElapsedTime();
-
-  switch(_layout) {
-    case 'Waves':
-      t *= 2.5;
-      var SEPARATION = 100, AMOUNTX = 50, AMOUNTY = 50, i = 0;
-      for ( var ix = 0; ix < num_logo_arcs; ix++ ) {
-        for ( var iy = 0; iy < logo_arc_degrees; iy += 99 / num_particles_per_arc ) {
-          arr[i].x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 ) + 1500;
-          arr[i].y = (Math.sin( ( ix + t ) * 0.3 ) * 50 ) + ( Math.sin( ( iy + t ) * 0.5 ) * 50);
-          arr[i].z = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
-
-          //arr[i] = rotateX(arr[i], Math.sin(t) * 0.2); // get this rotation correct
-          //arr[i] = rotateZ(arr[i], t); // get this rotation correct
-          arr[i] = rotateY(arr[i], t * 0.01); // get this rotation correct
-          i++;
-        }
-      }
-      break;
-    case 'Expand':
-      var radius = 700;
-      for (var i = 0; i < num_particles; i++) {
-        theta = i / 80.0 * Math.PI;
-        phi = i / Math.PI + (t * 0.2);
-        arr[i].x =  Math.cos(theta + t * 0.05) * Math.sin(phi) * radius;
-        arr[i].y =  Math.sin(theta) * Math.sin(phi + t * 0.24) * radius;
-        arr[i].z =  Math.cos(phi)   * radius;
-      }
-      break;
-    case 'Twinkle':
-      var inc = (Math.PI * 2) / num_particles;
-      var rad = (Math.sin(t) * 200.2) + 500;
-      for (var i = 0; i < num_particles; i++) {
-        arr[i].x = Math.cos(inc*i) * rad;
-        arr[i].y = Math.sin(inc*i) * rad;
-        arr[i].z = Math.sin(inc * i + t) * i;
-      }
-      break;
-    case 'Cluster':
-      var radius = 700;
-      t /= 10.5;
-      for (var i = 0; i < num_particles; i++) {
-        theta = i / 20.0 * Math.PI;
-        phi = i / 8. * Math.PI + t * 11.0;
-        arr[i].x =  Math.cos(theta) * Math.sin(phi) * radius;
-        arr[i].y =  Math.sin(theta) * Math.sin(phi) * radius;
-        arr[i].z =  Math.cos(phi)   * radius * t / 20.0;
-      }
-      break;
-    case 'Network':
-      for (var i = 0; i < num_particles; i++) {
-        var tmp_x = new THREE.Vector3(0,0,0);
-        arr[i] = _rand_pos[i];
-        arr[i] = rotateX(arr[i], 0.001); // get this rotation correct
-        arr[i] = rotateZ(arr[i], 0.0001); // get this rotation correct
-        arr[i] = rotateY(arr[i], 0.0021); // get this rotation correct
-      }
-      break;
-    case 'Logo':
-      var inc = PI2 / 360,
-          arc_radius = 700,
-          logo_radius = 300,
-          logo_center = { x : 0, y : 0},
-          arc_rot_inc = PI2 / num_logo_arcs,
-          arc_rot = 0,
-          count = 0;
-      // loop through all arcs
-      for (var i = 0; i < num_logo_arcs; i++) {
-        arc_rot = arc_rot_inc * i + t * -0.1;
-        // draw each arc
-        for ( var a = 0; a < logo_arc_degrees; a += 99/num_particles_per_arc ) {
-          var pos = new THREE.Vector3(0, 0, 0);
-          // generate particle position based on scaled ellipse
-          pos.x = logo_center.x + Math.cos(inc * a) * arc_radius * 1.15;
-          pos.y = logo_center.y + Math.sin(inc * a) * arc_radius * 1.0;
-          // do rotation per arc
-          pos = rotateZ(pos, arc_rot);
-          // individual arc rotation
-          var tmp_x = logo_center.x + Math.cos(arc_rot) * logo_radius,
-              tmp_y = logo_center.y + Math.sin(arc_rot) * logo_radius;
-          pos.x -= tmp_x;
-          pos.y -= tmp_y;
-          pos = rotateZ(pos, -1.8); // get this rotation correct
-          pos.x += tmp_x;
-          pos.y += tmp_y;
-          arr[count++] = pos;
-        }
-      }
-      break;
-    }
-    return arr;
-}
-
 
 var animate = function() {
   requestAnimationFrame( animate );
@@ -349,8 +236,11 @@ var render = function () {
   //camera.position.x += ( mouseX - camera.position.x ) * .05;
   //camera.position.y += ( - mouseY - camera.position.y ) * .05;
   camera.lookAt( scene.position );
-
   renderer.render( scene, camera );
+};
+
+var tween = function(currentProgress, start, end) {
+  return ( start + ( currentProgress * ( end - start) ));
 };
 
 var transition = function( pos, start, end, smoothing ) {
@@ -358,55 +248,4 @@ var transition = function( pos, start, end, smoothing ) {
   pos.y = lerp(pos.y, tween(transitionMix, start.y, end.y), smoothing);
   pos.z = lerp(pos.z, tween(transitionMix, start.z, end.z), smoothing);
   return pos;
-};
-
-var tween = function(currentProgress, start, end) {
-  return ( start + ( currentProgress * ( end - start) ));
-};
-
-
-
-
-
-
-
-
-
-/// UTIL
-
-// linear map
-var lmap = function(v, in_min, in_max, out_min, out_max) {
-  return out_min + (out_max-out_min) * ((v - in_min) / (in_max - in_min));
-}
-// linear interpolation
-var lerp = function(start, end, amt) {
-  return start + (end - start) * amt;
-}
-// rotation
-var rotateX = function(p, angle) {
-  var sina = Math.sin(angle);
-  var cosa = Math.cos(angle);
-  var ry = p.y * cosa - p.z * sina;
-  var rz = p.y * sina + p.z * cosa;
-  p.y = ry;
-  p.z = rz;
-  return p;
-};
-var rotateY = function(p, angle) {
-  var sina = Math.sin(angle);
-  var cosa = Math.cos(angle);
-  var rx = p.x * cosa - p.z * sina;
-  var rz = p.x * sina + p.z * cosa;
-  p.x = rx;
-  p.z = rz;
-  return p;
-};
-var rotateZ = function(p, angle) {
-  var sina = Math.sin(angle);
-  var cosa = Math.cos(angle);
-  var rx = p.x * cosa - p.y * sina;
-  var ry = p.x * sina + p.y * cosa;
-  p.x = rx;
-  p.y = ry;
-  return p;
 };
