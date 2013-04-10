@@ -23,20 +23,19 @@ var bgColor = '#222';
 
 var container, stats;
 var camera, scene, renderer;
-var particles, particle, count = 0;
+var particles = [], particle, count = 0;
 var lines;
 var lineOpacityA = 0, lineOpacityB = 0;
 var targets;
 var targetA = [], targetB = [];
 
 var currentLayout = 0, nextLayout = 0, transitionMix = 0;
-var progressControl;
 var transitionIndex = 0;
-var progress = 0;
+var position = 0;
 
 var clock = new THREE.Clock(true);
 
-var progressBar, layoutSelector;
+var positionBar, layoutSelector;
 
 var logo_arc_degrees = 99;
 var num_particles_per_arc = 60;
@@ -63,10 +62,11 @@ window.onload = function() {
   // gui.addColor(this, 'color0' ).onChange(onColorChanged);
   // gui.addColor(this, 'color1' ).onChange(onColorChanged);
   // gui.addColor(this, 'color2' ).onChange(onColorChanged);
-  progressBar = gui.add(this, 'progress', 0, 100).onChange(onProgressChange);
+  positionBar = gui.add(this, 'position', 0, 100).onChange(onpositionChange);
   gui.addColor(this, 'particleColor' ).onChange(function(v) {
     var c = v.replace( '#','0x' )
-    for (var i = 0; i < num_particles; i++)
+    var i = num_particles;
+    while(i--)
       particles[i].material.color.setHex( c );
   });
   gui.addColor(this, 'bgColor' ).onChange(function(v) {
@@ -81,9 +81,9 @@ window.onload = function() {
   camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
   camera.position.z = 1500;
 
-  // particles
-  particles = new Array(num_particles);
-  for ( var i = 0; i < num_particles; i ++ ) {
+  // create particles
+  var i = num_particles;
+  while(i--) {
     particle = particles[ i ] = new THREE.Particle(
       new THREE.ParticleCanvasMaterial( {
         color : particleColor,
@@ -105,7 +105,8 @@ window.onload = function() {
       linewidth : 1
   });
   material.opacity = 0;
-  for (var i = 0; i < lines.length; i++) {
+  var i = lines.length;
+  while (i--) {
     var geometry = new THREE.Geometry();
     geometry.vertices.push(new THREE.Vector3());
     geometry.vertices.push(new THREE.Vector3());
@@ -166,10 +167,10 @@ var onDocumentTouchMove = function ( event ) {
   }
 };
 
-var onProgressChange = function() {
+var onpositionChange = function() {
 
   //var step = 100 / layout_states.length-1;
-  var layoutID = lmap(progress, 0, 100, 0, layout_states.length - 1);
+  var layoutID = lmap(position, 0, 100, 0, layout_states.length - 1);
 
   currentLayout = layout_states[parseInt(layoutID)];
   nextLayout = currentLayout == layout_states[layout_states.length - 1] ?
@@ -190,9 +191,9 @@ var onProgressChange = function() {
 };
 
 var onLayoutChanged = function() {
-  // set progress bar position based on layout change
+  // set position bar position based on layout change
   var pos = lmap(layout_states.indexOf(layout), 0, layout_states.length-1, 0, 100);
-  progressBar.setValue(pos);
+  positionBar.setValue(pos);
 };
 
 var updateTargets = function() {
@@ -206,11 +207,11 @@ var generateTargets = function(_layout) {
 };
 
 var updateLines = function() {
-  var randIds = new Array(num_particles);
-  for (var i = 0; i < lines.length; i++) {
+  var i = lines.length;
+  while(i--) {
     lines[i].geometry.vertices[0].copy(particles[i].position);
     lines[i].geometry.vertices[1].copy(particles[i+1].position);
-    lines[i].material.opacity = tween(transitionMix, lineOpacityA, lineOpacityB);
+    lines[i].material.opacity = lerp(lineOpacityA, lineOpacityB, transitionMix);
   }
 };
 
@@ -225,27 +226,17 @@ var animate = function() {
 var render = function () {
 
   // update particle positions
-  for (var i = 0; i < num_particles; i++) {
+  var i = num_particles;
+  while(i--) {
     var pp = particles[i].position;
-    pp.x = lerp(pp.x, tween(transitionMix, targetA[i].x, targetB[i].x), 0.2);
-    pp.y = lerp(pp.y, tween(transitionMix, targetA[i].y, targetB[i].y), 0.2);
-    pp.z = lerp(pp.z, tween(transitionMix, targetA[i].z, targetB[i].z), 0.2);
+    pp.x = lerp(pp.x, lerp(targetA[i].x, targetB[i].x, transitionMix), 0.1);
+    pp.y = lerp(pp.y, lerp(targetA[i].y, targetB[i].y, transitionMix), 0.1);
+    pp.z = lerp(pp.z, lerp(targetA[i].z, targetB[i].z, transitionMix), 0.1);
   }
 
   // update camera position
-  //camera.position.x += ( mouseX - camera.position.x ) * .05;
-  //camera.position.y += ( - mouseY - camera.position.y ) * .05;
+  // camera.position.x += ( mouseX - camera.position.x ) * .05;
+  // camera.position.y += ( - mouseY - camera.position.y ) * .05;
   camera.lookAt( scene.position );
   renderer.render( scene, camera );
-};
-
-var tween = function(currentProgress, start, end) {
-  return ( start + ( currentProgress * ( end - start) ));
-};
-
-var transition = function( pos, start, end, smoothing ) {
-  pos.x = lerp(pos.x, tween(transitionMix, start.x, end.x), smoothing);
-  pos.y = lerp(pos.y, tween(transitionMix, start.y, end.y), smoothing);
-  pos.z = lerp(pos.z, tween(transitionMix, start.z, end.z), smoothing);
-  return pos;
 };

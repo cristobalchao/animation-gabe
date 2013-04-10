@@ -10,7 +10,7 @@ var lerp = function(start, end, amt) {
   return start + (end - start) * amt;
 }
 
-// rotation
+// vector3 rotation
 var rotateX = function(p, angle) {
   var sina = Math.sin(angle);
   var cosa = Math.cos(angle);
