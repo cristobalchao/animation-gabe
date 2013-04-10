@@ -128,6 +128,7 @@ window.onload = function() {
   //document.addEventListener( 'mousedown', onDocumentMouseDown, false );
   document.addEventListener( 'touchstart', onDocumentTouchStart, false );
   document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+  document.addEventListener( 'keydown', onDocumentKeyDown, false );
   window.addEventListener( 'resize', onWindowResize, false );
 
   // stats
@@ -166,6 +167,12 @@ var onDocumentTouchMove = function ( event ) {
     mouseY = event.touches[ 0 ].pageY - windowHalfY;
   }
 };
+var onDocumentKeyDown = function (event) {
+  if (event.keyCode == 190)
+    positionBar.setValue(positionBar.getValue() + 1);
+  if (event.keyCode == 188)
+    positionBar.setValue(positionBar.getValue() - 1);
+};
 
 var onpositionChange = function() {
 
@@ -179,6 +186,8 @@ var onpositionChange = function() {
   lineOpacityA = line_opacity_states[parseInt(layoutID)];
   lineOpacityB = lineOpacityA == line_opacity_states[line_opacity_states.length - 1] ?
                  lineOpacityA : line_opacity_states[parseInt(layoutID) + 1];
+
+  //console.log("opacity", lineOpacityA, lineOpacityB);
 
   transitionMix = layoutID - parseInt(layoutID);
 
