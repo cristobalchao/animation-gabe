@@ -77,22 +77,24 @@ var animation_states = [
       var i = num_particles, arr = [];
       while(i--) {
         arr[i] = new THREE.Vector3(0,0,0);
-        arr[i].opacity = 1;
       }
 
-      for (var i = 0; i < num_particles; i++) {
-        var tmp_x = new THREE.Vector3(0,0,0);
-        arr[i].copy(_rand_pos[i]);
-        arr[i] = rotateX(arr[i], t * 0.01);
-        arr[i] = rotateZ(arr[i], t * 0.001);
-        arr[i] = rotateY(arr[i], t * 0.021);
-
-        // twinkle opacity
-        arr[i].opacity = (Math.sin((t * 2.5) + (_rands[i] * 100)) * .5) + .5;
+      t *= 2.5;
+      var SEPARATION = 100, AMOUNTX = 50, AMOUNTY = 50, i = 0;
+      for ( var ix = 0; ix < num_logo_arcs; ix++ ) {
+        for ( var iy = 0; iy < logo_arc_degrees; iy += logo_arc_degrees / num_particles_per_arc ) {
+          arr[i].x = (_rand_pos2[i].x * 0.2) + ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 ) + 1500;
+          arr[i].y = _rand_pos2[i].y + ((Math.sin( ( ix + t ) * 0.1 ) * 25 ) + ( Math.sin( ( iy + t ) * 0.1 ) * 25) * 0.3);
+          arr[i].z = _rand_pos2[i].z * 2.0;//+ iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
+          arr[i] = rotateX(arr[i], t * -0.01);
+          arr[i] = rotateZ(arr[i], t * 0.001);
+          arr[i] = rotateY(arr[i], t * 0.01);
+          arr[i].opacity = (Math.sin((t * 1.5) + (_rands[i] * 100)) * .5) + .5;
+          i++;
+        }
       }
       return arr;
     }
-
 
   },
 

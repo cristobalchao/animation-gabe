@@ -14,7 +14,7 @@ var currentLayout = 0, nextLayout = 0;
 var currentLineOpacity = 0, nextLineOpacity = 0;
 
 var particleColor = '#319ba2';
-var bgColor = '#222';
+var bgColor = '#E8E7E3';
 
 var container, stats;
 var camera, scene, renderer;
@@ -232,7 +232,6 @@ var render = function () {
     pp.y = lerp(pp.y, lerp(targetA[i].y, targetB[i].y, transitionMix), 0.1);
     pp.z = lerp(pp.z, lerp(targetA[i].z, targetB[i].z, transitionMix), 0.1);
     particles[i].material.opacity = lerp(targetA[i].opacity, targetB[i].opacity, transitionMix);
-    //particles[i].material.opacity = lerp(particles[i].material.opacity, lerp(targetA[i].opacity, targetB[i].opacity, transitionMix), 0.1);
   }
   // update lines
   var i = lines.length;
