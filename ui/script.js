@@ -18,7 +18,7 @@ var bgColor = '#222';
 
 var container, stats;
 var camera, scene, renderer;
-var particles = [], particle, count = 0;
+var particles = [];
 var lines;
 var targets;
 var targetA = [], targetB = [];
@@ -78,7 +78,7 @@ window.onload = function() {
   // create particles
   var i = num_particles;
   while(i--) {
-    particle = particles[ i ] = new THREE.Particle(
+    var p = particles[ i ] = new THREE.Particle(
       new THREE.ParticleCanvasMaterial( {
         color : particleColor,
         program: function ( context ) {
@@ -87,9 +87,9 @@ window.onload = function() {
           context.fill();
         }
       }));
-    particle.position = new THREE.Vector3(0,0,0);
-    particle.scale.x = particle.scale.y = 10;
-    scene.add( particle );
+    p.position = new THREE.Vector3(0,0,0);
+    p.scale.x = p.scale.y = 10;
+    scene.add( p );
   }
 
   // lines
@@ -186,6 +186,8 @@ var onpositionChange = function() {
 
   transitionMix = layout_pos - layoutID;
 
+  curState.transitionMix = nextState.transitionMix = transitionMix;
+
   if (layout != currentLayout) {
     layout = currentLayout;
     targetA = generateTargets(currentLayout);
@@ -213,19 +215,9 @@ var getAnimationStateFromLayout = function(_layout) {
   return animation_states[layout_states.indexOf(_layout)];
 };
 
-var updateLines = function() {
-  var i = lines.length;
-  while(i--) {
-    lines[i].geometry.vertices[0].copy(particles[i].position);
-    lines[i].geometry.vertices[1].copy(particles[i+1].position);
-    lines[i].material.opacity = lerp(currentLineOpacity, nextLineOpacity, transitionMix);
-  }
-};
-
 var animate = function() {
   requestAnimationFrame( animate );
   updateTargets();
-  updateLines();
   render();
   stats.update();
 };
@@ -239,6 +231,15 @@ var render = function () {
     pp.x = lerp(pp.x, lerp(targetA[i].x, targetB[i].x, transitionMix), 0.1);
     pp.y = lerp(pp.y, lerp(targetA[i].y, targetB[i].y, transitionMix), 0.1);
     pp.z = lerp(pp.z, lerp(targetA[i].z, targetB[i].z, transitionMix), 0.1);
+    particles[i].material.opacity = lerp(targetA[i].opacity, targetB[i].opacity, transitionMix);
+    //particles[i].material.opacity = lerp(particles[i].material.opacity, lerp(targetA[i].opacity, targetB[i].opacity, transitionMix), 0.1);
+  }
+  // update lines
+  var i = lines.length;
+  while(i--) {
+    lines[i].geometry.vertices[0].copy(particles[i].position);
+    lines[i].geometry.vertices[1].copy(particles[i+1].position);
+    lines[i].material.opacity = lerp(currentLineOpacity, nextLineOpacity, transitionMix);
   }
 
   // update camera position
@@ -247,3 +248,4 @@ var render = function () {
   camera.lookAt( scene.position );
   renderer.render( scene, camera );
 };
+

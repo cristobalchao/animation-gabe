@@ -1,18 +1,22 @@
 // invitae animation states
 
 var animation_states = [
-
-
   {
     "label" : "Waves",
     "particleScale" : 6,
-    "lineOpacity" : 0.5,
+    "lineOpacity" : 0,
     update : function(t) {
 
 
+      // console.log(
+      //   lmap(this.transitionMix || 0, 0, 1, 1, 0)
+      //   );
+
       var i = num_particles, arr = [];
-      while(i--)
+      while(i--) {
         arr[i] = new THREE.Vector3(0,0,0);
+        arr[i].opacity = 1;
+      }
 
       t *= 2.5;
       var SEPARATION = 100, AMOUNTX = 50, AMOUNTY = 50, i = 0;
@@ -38,14 +42,14 @@ var animation_states = [
   {
     "label" : "Expand",
     "particleScale" : 6,
-    "lineOpacity" : 1,
+    "lineOpacity" : 0,
     update : function(t) {
 
-
-
       var i = num_particles, arr = [];
-      while(i--)
+      while(i--) {
         arr[i] = new THREE.Vector3(0,0,0);
+        arr[i].opacity = 1;
+      }
 
       t *= 2.5;
       var SEPARATION = 100, AMOUNTX = 50, AMOUNTY = 50, i = 0;
@@ -64,21 +68,27 @@ var animation_states = [
 
 
   {
+
     "label" : "Twinkle",
     "particleScale" : 6,
     "lineOpacity" : 0,
     update : function(t) {
 
       var i = num_particles, arr = [];
-      while(i--)
+      while(i--) {
         arr[i] = new THREE.Vector3(0,0,0);
+        arr[i].opacity = 1;
+      }
 
       for (var i = 0; i < num_particles; i++) {
         var tmp_x = new THREE.Vector3(0,0,0);
-        arr[i] = _rand_pos[i];
-        arr[i] = rotateX(arr[i], 0.001); // get this rotation correct
-        arr[i] = rotateZ(arr[i], 0.0001); // get this rotation correct
-        arr[i] = rotateY(arr[i], 0.0021); // get this rotation correct
+        arr[i].copy(_rand_pos[i]);
+        arr[i] = rotateX(arr[i], t * 0.01);
+        arr[i] = rotateZ(arr[i], t * 0.001);
+        arr[i] = rotateY(arr[i], t * 0.021);
+
+        // twinkle opacity
+        arr[i].opacity = (Math.sin((t * 2.5) + (_rands[i] * 100)) * .5) + .5;
       }
       return arr;
     }
@@ -89,12 +99,14 @@ var animation_states = [
   {
     "label" : "Cluster",
     "particleScale" : 6,
-    "lineOpacity" : 1,
+    "lineOpacity" : 0,
     update : function(t) {
 
       var i = num_particles, arr = [];
-      while(i--)
+      while(i--) {
         arr[i] = new THREE.Vector3(0,0,0);
+        arr[i].opacity = 1;
+      }
 
       var origin = new THREE.Vector3(0, 0, 0);
 
@@ -105,12 +117,12 @@ var animation_states = [
       var c = 0, cc = num_particles;
 
       for (var i = 0; i < num_clusters; i++) {
-				arr[c] = _cluster_positions[i];
+				arr[c].copy(_cluster_positions[i]);
 				c++;
 				cc--;
 				for (var j = 0; j < num_cluster_pnts - 5; j++) {
 
-					arr[c] = _cluster_positions[i].clone();
+					arr[c].copy(_cluster_positions[i]);
 					arr[c].y = _rands[c] * 100;
 
           arr[c].x -= _cluster_positions[i].x;
@@ -129,7 +141,7 @@ var animation_states = [
           c++;
           cc--;
           for (var k = j; k < 5; j++, k++) {
-          	arr[c] = _rand_pos[c];
+          	arr[c].copy( _rand_pos[c]);
           	c++;
           	cc--;
           }
@@ -142,19 +154,19 @@ var animation_states = [
   {
     "label" : "Network",
     "particleScale" : 6,
-    "lineOpacity" : 0,
+    "lineOpacity" : 1,
     update : function(t) {
 
       var i = num_particles, arr = [];
-      while(i--)
+      while(i--) {
         arr[i] = new THREE.Vector3(0,0,0);
-
+        arr[i].opacity = 1;
+      }
       for (var i = 0; i < num_particles; i++) {
         var tmp_x = new THREE.Vector3(0,0,0);
-        arr[i] = _rand_pos[i];
-        arr[i] = rotateX(arr[i], 0.001); // get this rotation correct
-        arr[i] = rotateZ(arr[i], 0.0001); // get this rotation correct
-        arr[i] = rotateY(arr[i], 0.0021); // get this rotation correct
+        arr[i].copy(_rand_pos[i]);
+        arr[i] = rotateY(arr[i], t * 0.018);
+        arr[i] = rotateZ(arr[i], t * 0.011);
       }
       return arr;
     }
@@ -163,12 +175,14 @@ var animation_states = [
   {
     "label" : "Logo",
     "particleScale" : 6,
-    "lineOpacity" : 1,
+    "lineOpacity" : 0,
     update : function(t) {
 
       var i = num_particles, arr = [];
-      while(i--)
+      while(i--) {
         arr[i] = new THREE.Vector3(0,0,0);
+        arr[i].opacity = 1;
+      }
 
 			var inc = PI2 / 360,
           arc_radius = 700,
@@ -196,7 +210,7 @@ var animation_states = [
           pos = rotateZ(pos, -1.8);
           pos.x += tmp_x;
           pos.y += tmp_y;
-          arr[count++] = pos;
+          arr[count++].copy(pos);
         }
       }
       return arr;
@@ -221,7 +235,6 @@ while (i--) {
 	_rands[i] = Math.random();
 	_rand_keys[i] = parseInt(Math.random() * (num_particles-1));
 }
-
 
 var num_clusters = 6;
 var _cluster_positions = [];
