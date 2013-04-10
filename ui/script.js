@@ -7,16 +7,11 @@ var layout_states = [
 , 'Network'
 , 'Logo'
 ];
-var line_opacity_states = [
-  0
-, 0
-, 0
-, 0
-, 1
-, 0
-];
 var layout = layout_states[0];
-var lineOpacity = line_opacity_states[0];
+
+var transitionMix = 0;
+var currentLayout = 0, nextLayout = 0;
+var currentLineOpacity = 0, nextLineOpacity = 0;
 
 var particleColor = '#319ba2';
 var bgColor = '#222';
@@ -25,11 +20,10 @@ var container, stats;
 var camera, scene, renderer;
 var particles = [], particle, count = 0;
 var lines;
-var lineOpacityA = 0, lineOpacityB = 0;
 var targets;
 var targetA = [], targetB = [];
 
-var currentLayout = 0, nextLayout = 0, transitionMix = 0;
+
 var transitionIndex = 0;
 var position = 0;
 
@@ -177,22 +171,22 @@ var onDocumentKeyDown = function (event) {
 var onpositionChange = function() {
 
   //var step = 100 / layout_states.length-1;
-  var layoutID = lmap(position, 0, 100, 0, layout_states.length - 1);
+  var layout_pos = lmap(position, 0, 100, 0, layout_states.length - 1);
+  var layoutID = parseInt(layout_pos);
 
-  currentLayout = layout_states[parseInt(layoutID)];
-  nextLayout = currentLayout == layout_states[layout_states.length - 1] ?
-               currentLayout : layout_states[parseInt(layoutID) + 1];
+  currentLayout = layout_states[layoutID];
+  nextLayout = layoutID + 1 == layout_states.length ?
+               currentLayout :  layout_states[layoutID + 1];
 
-  lineOpacityA = line_opacity_states[parseInt(layoutID)];
-  lineOpacityB = lineOpacityA == line_opacity_states[line_opacity_states.length - 1] ?
-                 lineOpacityA : line_opacity_states[parseInt(layoutID) + 1];
+  var curState = getAnimationStateFromLayout(currentLayout);
+  var nextState = getAnimationStateFromLayout(nextLayout);
 
-  //console.log("opacity", lineOpacityA, lineOpacityB);
+  currentLineOpacity = curState.lineOpacity;
+  nextLineOpacity = nextState.lineOpacity;
 
-  transitionMix = layoutID - parseInt(layoutID);
+  transitionMix = layout_pos - layoutID;
 
   if (layout != currentLayout) {
-    lineOpacity = lineOpacityA;
     layout = currentLayout;
     targetA = generateTargets(currentLayout);
     targetB = generateTargets(nextLayout);
@@ -212,7 +206,11 @@ var updateTargets = function() {
 
 var generateTargets = function(_layout) {
   var t = clock.getElapsedTime();
-  return animation_states[layout_states.indexOf(_layout)].update(t);
+  return getAnimationStateFromLayout(_layout).update(t);
+};
+
+var getAnimationStateFromLayout = function(_layout) {
+  return animation_states[layout_states.indexOf(_layout)];
 };
 
 var updateLines = function() {
@@ -220,7 +218,7 @@ var updateLines = function() {
   while(i--) {
     lines[i].geometry.vertices[0].copy(particles[i].position);
     lines[i].geometry.vertices[1].copy(particles[i+1].position);
-    lines[i].material.opacity = lerp(lineOpacityA, lineOpacityB, transitionMix);
+    lines[i].material.opacity = lerp(currentLineOpacity, nextLineOpacity, transitionMix);
   }
 };
 

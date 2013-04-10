@@ -6,8 +6,9 @@ var animation_states = [
   {
     "label" : "Waves",
     "particleScale" : 6,
-    "lineOpacity" : 0,
+    "lineOpacity" : 0.5,
     update : function(t) {
+
 
       var i = num_particles, arr = [];
       while(i--)
@@ -28,6 +29,8 @@ var animation_states = [
       }
       return arr;
     }
+
+
   },
 
 
@@ -35,8 +38,10 @@ var animation_states = [
   {
     "label" : "Expand",
     "particleScale" : 6,
-    "lineOpacity" : 0,
+    "lineOpacity" : 1,
     update : function(t) {
+
+
 
       var i = num_particles, arr = [];
       while(i--)
@@ -57,10 +62,11 @@ var animation_states = [
     }
   },
 
+
   {
     "label" : "Twinkle",
     "particleScale" : 6,
-    "lineOpacity" : 1,
+    "lineOpacity" : 0,
     update : function(t) {
 
       var i = num_particles, arr = [];
@@ -76,6 +82,8 @@ var animation_states = [
       }
       return arr;
     }
+
+
   },
 
   {
@@ -155,7 +163,7 @@ var animation_states = [
   {
     "label" : "Logo",
     "particleScale" : 6,
-    "lineOpacity" : 0,
+    "lineOpacity" : 1,
     update : function(t) {
 
       var i = num_particles, arr = [];
