@@ -104,12 +104,7 @@ var animation_states = [
     "lineOpacity" : 0,
     update : function(t) {
 
-      var i = num_particles, arr = [];
-      while(i--) {
-        arr[i] = new THREE.Vector3(0,0,0);
-        arr[i].opacity = 1;
-      }
-
+      var arr = _cluster_particles;
       var origin = new THREE.Vector3(0, 0, 0);
 
       t *= 0.5;
@@ -119,37 +114,53 @@ var animation_states = [
       var c = 0, cc = num_particles;
 
       for (var i = 0; i < num_clusters; i++) {
-				arr[c].copy(_cluster_positions[i]);
+        var cluster_p = _cluster_positions[i];
+				arr[c].copy(cluster_p);
+        arr[c].opacity = 1;
 				c++;
 				cc--;
 				for (var j = 0; j < num_cluster_pnts - 5; j++) {
 
-					arr[c].copy(_cluster_positions[i]);
-					arr[c].y = _rands[c] * 100;
+          //arr[c].copy(_cluster_positions[i]);
 
+
+//          var tmp = new THREE.Vector3(arr[c]);
+
+          //arr[c].
           arr[c].x -= _cluster_positions[i].x;
-          arr[c].y -= _cluster_positions[i].y / 4;
-
-          //arr[c]    = rotateY( arr[c], t * _rands[cc] * .5 );
-          arr[c]    = rotateZ( arr[c], t * 2.6 * (_rands[_rand_keys[cc]]) );
-          arr[c]    = rotateY( arr[c], t * 1.0 * (_rands[c]) );
-          arr[c]    = rotateX( arr[c], t * -1.0 * (_rands[c]) );
-
-          //arr[c].y = Math.sin(arr[c].y * t * 0.2) * 100;
-
+          arr[c].y -= _cluster_positions[i].y;
+          arr[c].y  += _rands[c] * 10.1;
+          arr[c] = rotateY(arr[c], 0.5);
           arr[c].x += _cluster_positions[i].x;
-          arr[c].y += _cluster_positions[i].y / 2;
+          arr[c].y += _cluster_positions[i].y;
 
+
+
+          //arr[i] = rotateZ(arr[i], t * 0.011);
+          //arr[c].position.add(arr[c].velocity);
+					//_cluster_particles[c].copy(_cluster_positions[i]);
+          // arr[c] = _cluster_positions[c];
+          // arr[c].velocity.y = Math.random() * 1000.1;
+
+					//arr[c].y = _rands[c] * 100;
+          arr[c].opacity = 1;
           c++;
           cc--;
+          // place some random particles around
           for (var k = j; k < 5; j++, k++) {
           	arr[c].copy( _rand_pos[c]);
+            //arr[c].opacity = (Math.sin((t * 1.5) + (_rands[c] * 100)) * .5) + .5;
           	c++;
           	cc--;
           }
 				}
       }
-      return arr;
+      var i = num_particles, ret = [];
+      while(i--) {
+        ret[i] = arr[i];
+        ret[i].opacity = 1;
+      }
+      return ret;
     }
   },
 
@@ -221,7 +232,7 @@ var animation_states = [
 ];
 
 
-var _rand_pos = [], _rand_pos2 = [], _rand_pos3 = [];
+var _rand_pos = [], _rand_pos2 = [], _rand_pos3 = [], _cluster_particles = [];
 var _rands = [], _rand_keys = [];
 // create some random positions for testing
 var i = num_particles;
@@ -231,6 +242,10 @@ while (i--) {
       (Math.random() * 1000 - 500) * 2,
       (Math.random() * 1000 - 500) * 2);
   _rand_pos2[i] = new THREE.Vector3(
+      (Math.random() * 1000 - 500) * 2,
+      (Math.random() * 1000 - 500) * 2,
+      (Math.random() * 1000 - 500) * 2);
+  _cluster_particles[i] = new THREE.Vector3(
       (Math.random() * 1000 - 500) * 2,
       (Math.random() * 1000 - 500) * 2,
       (Math.random() * 1000 - 500) * 2);
@@ -247,4 +262,3 @@ while (i--) {
       (Math.random() * 500 - 250) * 2,
       (Math.random() * 500 - 250) * 2);
 }
-
